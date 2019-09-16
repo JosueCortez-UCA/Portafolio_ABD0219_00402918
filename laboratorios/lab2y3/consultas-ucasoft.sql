@@ -73,17 +73,7 @@ GROUP BY proyecto
 ;
 
 /*9. Averigüe de qué proyectos es subproyecto el denominado “aulavirt”.*/
---FORMA 1
-SELECT py.codigo AS "Codigo Macro Proyecto", py.denominacion AS "Denominacion Macro Proyecto"
-FROM proyecto py
-INNER JOIN proyecto_parte pp ON py.codigo = pp.codigo_macroproyecto
-WHERE pp.codigo_subproyecto = (
-	SELECT p.codigo
-	FROM proyecto p
-	WHERE p.denominacion = 'aulavirt'
-)
-;
---FORMA 2
+
 SELECT codigo AS "Codigo Macro Proyecto", denominacion AS "Denominacion Macro Proyecto"
 FROM proyecto
 WHERE codigo = (
