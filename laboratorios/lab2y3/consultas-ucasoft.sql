@@ -46,15 +46,78 @@ GROUP BY tipo
 /*6. Filtre de la anterior consulta aquellas categorías que tienen ganancias
 acumuladas de más de $100,000.*/
 
+
+SELECT tipo, SUM(monto_acumulado) AS monto_acumulado
+FROM proyecto
+GROUP BY tipo
+HAVING SUM(monto_acumulado) > CAST('$ 100,000' AS MONEY)
+;
+
 /*7. Obtenga un listado de todos los proyectos en el que se muestre el
 nombre de las superpachangas en las que eventualmente fue
 presentado cada proyecto (o nulo si no lo fue).*/
 
+SELECT py.denominacion, COALESCE(ps.nombre_superpachanga, 'nulo')
+FROM proyecto py
+LEFT JOIN presenta ps ON py.codigo = ps.codigo_proyecto
+;
+
 /*8. Liste los nombres de todos los proyectos que tengan versiones
 superiores a la 1.0.*/
 
+SELECT p.denominacion AS proyecto
+FROM version v
+INNER JOIN proyecto p ON v.codigo_proyecto = p.codigo
+WHERE numero > 1
+GROUP BY proyecto
+;
+
 /*9. Averigüe de qué proyectos es subproyecto el denominado “aulavirt”.*/
+--FORMA 1
+SELECT py.codigo AS "Codigo Macro Proyecto", py.denominacion AS "Denominacion Macro Proyecto"
+FROM proyecto py
+INNER JOIN proyecto_parte pp ON py.codigo = pp.codigo_macroproyecto
+WHERE pp.codigo_subproyecto = (
+	SELECT p.codigo
+	FROM proyecto p
+	WHERE p.denominacion = 'aulavirt'
+)
+;
+--FORMA 2
+SELECT codigo AS "Codigo Macro Proyecto", denominacion AS "Denominacion Macro Proyecto"
+FROM proyecto
+WHERE codigo = (
+	SELECT codigo_macroproyecto
+	FROM proyecto_parte, proyecto
+	WHERE codigo_subproyecto = codigo
+	AND denominacion = 'aulavirt'
+)
+;
 
 /*10. Efectúe la consulta anterior considerando que los proyectos de los
 cuales “aulavirt” es supbroyecto podrían ser a su vez subproyectos de
 otros, y así sucesivamente.*/
+
+SELECT codigo AS "Codigo", denominacion AS "Denominacion"
+FROM proyecto
+WHERE codigo IN (
+	WITH RECURSIVE macro_proyecto(cod) AS (
+		SELECT codigo_macroproyecto
+		FROM proyecto, proyecto_parte
+		WHERE codigo_subproyecto = codigo
+		AND denominacion = 'aulavirt'
+	UNION ALL
+		SELECT pp.codigo_macroproyecto
+		FROM macro_proyecto macro, proyecto_parte pp
+		WHERE pp.codigo_macroproyecto
+			IN (
+				SELECT codigo_macroproyecto
+				FROM proyecto_parte
+				WHERE codigo_subproyecto = macro.cod
+			)
+	)
+	SELECT cod
+	FROM macro_proyecto
+)
+ORDER BY codigo
+;
