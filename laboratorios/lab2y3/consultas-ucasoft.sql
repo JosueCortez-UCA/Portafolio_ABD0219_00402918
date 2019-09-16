@@ -38,7 +38,7 @@ ORDER BY precio_contratos
 /*5. Obtenga el monto acumulado por tipo de proyectos (web,
 venta_almacen y ERP).*/
 
-SELECT tipo, SUM(monto_acumulado)
+SELECT tipo, SUM(monto_acumulado) AS monto_acumulado
 FROM proyecto
 GROUP BY tipo
 ;
