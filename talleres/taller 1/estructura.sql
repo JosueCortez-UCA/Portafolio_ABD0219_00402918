@@ -353,3 +353,4 @@ CREATE TABLE acuerda(
     constraint fk_responsable_acuerda foreign key (dui_responsable) references responsable_alumno(dui)
     ON delete cascade ON update cascade
 );
+
