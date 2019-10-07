@@ -37,18 +37,18 @@ CREATE TABLE aula(
 
 --TABLA clase
 CREATE TABLE clase(
-    id int not null constraint pk_clase primary key,
     nivel_aula smallint not null,
     orden_aula smallint not null,
+    constraint pk_clase primary key(nivel_aula, orden_aula),
     constraint fk_aula_clase foreign key(nivel_aula, orden_aula) references aula(nivel, orden)
     ON delete cascade ON update cascade
 );
 
 --TABLA laboratorios y centro de computo
 CREATE TABLE lab_cc(
-    id int not null constraint pk_lab_cc primary key,
     nivel_aula smallint not null,
     orden_aula smallint not null,
+    constraint pk_lab_cc primary key(nivel_aula, orden_aula),
     constraint fk_aula_lab_cc foreign key(nivel_aula, orden_aula) references aula(nivel, orden)
     ON delete cascade ON update cascade
 );
@@ -124,7 +124,7 @@ CREATE TABLE aulaxseccion(
 
 --TABLA aulaXasignatura
 CREATE TABLE aulaxasignatura(
-    seccion char(1) not null constraint pk_aulaxseccion primary key,
+    seccion char(1) not null constraint pk_aulaxasignatura primary key,
     nivel_aula smallint not null,
     orden_aula smallint not null,
     denominacion_asignatura varchar(100) not null,
@@ -159,12 +159,12 @@ CREATE TABLE responsable_seccion(
     dui_docente char(10) not null,
     seccion char(1) not null,
     semestre smallint not null,
-    constraint pk_responsable_seccion primary key (dui_docente, seccion),
+    constraint pk_responsable_seccion primary key (dui_docente, seccion, semestre),
     constraint fk_docente_responsable foreign key (dui_docente) references docente(dui)
     ON delete cascade ON update cascade,
     constraint fk_seccion_responsable foreign key (seccion) references seccion(letra)
     ON delete cascade ON update cascade,
-    constraint fk_semestre_responsable foreign key (seccion) references semestre(orden)
+    constraint fk_semestre_responsable foreign key (semestre) references semestre(orden)
     ON delete cascade ON update cascade
 );
 
@@ -217,7 +217,7 @@ CREATE TABLE empleado(
 
 --TABLA estudiante, tabla "hija" que compartiran tanto RESPONSABLE_ALUMNO como DOCENTE
 CREATE TABLE estudiante(
-    id int not null constraint pk_empleado primary key,
+    id int not null constraint pk_estudiante primary key,
     dui_responsable char(10),
     dui_docente char(10),
     constraint fk_responsable_estudiante foreign key (dui_responsable) references responsable_alumno(dui)
@@ -244,7 +244,7 @@ CREATE TABLE estudia(
 
 --TABLA subvencion
 CREATE TABLE subvencion(
-    id int not null constraint pk_empleado primary key,
+    id int not null constraint pk_subvencion primary key,
     cantidad money not null default 0
 );
 
