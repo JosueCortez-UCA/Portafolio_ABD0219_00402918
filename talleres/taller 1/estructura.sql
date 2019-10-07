@@ -5,17 +5,20 @@ CREATE TABLE nivel(
 
 --TABLA grado
 CREATE TABLE grado(
-    numero smallint not null constraint pk_grado primary key,
+    numero smallint not null,
     denominacion_nivel varchar(100),
+    constraint pk_grado primary key(numero, denominacion_nivel),
     constraint fk_nivel_grado foreign key(denominacion_nivel) references nivel(denominacion)
     ON delete cascade ON update cascade
 );
 
 --TABLA seccion
 CREATE TABLE seccion(
-    letra char(1) not null constraint pk_seccion primary key,
-    grado smallint,
-    constraint fk_grado_seccion foreign key(grado) references grado(numero)
+    letra char(1) not null,
+    numero_grado smallint,
+    denominacion_nivel varchar(100),
+    constraint pk_seccion primary key(letra, numero_grado, denominacion_nivel),
+    constraint fk_grado_seccion foreign key(numero_grado, denominacion_nivel) references grado(numero, denominacion_nivel)
     ON delete cascade ON update cascade
 );
 
@@ -77,9 +80,10 @@ CREATE TABLE profesor(
 --TABLA asignatura
 CREATE TABLE asignatura(
     denominacion varchar(30) not null constraint pk_asignatura primary key,
-    grado smallint,
+    numero_grado smallint,
+    denominacion_nivel varchar(100),
     annio int not null,
-    constraint fk_grado_asignatura foreign key (grado) references grado(numero)
+    constraint fk_grado_asignatura foreign key (numero_grado, denominacion_nivel) references grado(numero, denominacion_nivel)
     ON delete cascade ON update cascade,
     constraint fk_annio_asignatura foreign key (annio) references annio(numero)
     ON delete cascade ON update cascade
@@ -110,11 +114,14 @@ CREATE TABLE reserva(
 
 --TABLA aulaXseccion
 CREATE TABLE aulaxseccion(
-    seccion char(1) not null constraint pk_aulaxseccion primary key,
+    letra_seccion char(1) not null,
+    numero_grado smallint,
+    denominacion_nivel varchar(100),
     nivel_aula smallint not null,
     orden_aula smallint not null,
     annio int not null,
-    constraint fk_seccion_aulaxseccion foreign key (seccion) references seccion(letra)
+    constraint pk_aulaxseccion primary key(letra_seccion, numero_grado, denominacion_nivel),
+    constraint fk_seccion_aulaxseccion foreign key (letra_seccion, numero_grado, denominacion_nivel) references seccion(letra, numero_grado, denominacion_nivel)
     ON delete cascade ON update cascade,
     constraint fk_aula_aulaxseccion foreign key(nivel_aula, orden_aula) references clase(nivel_aula, orden_aula)
     ON delete cascade ON update cascade,
@@ -124,12 +131,15 @@ CREATE TABLE aulaxseccion(
 
 --TABLA aulaXasignatura
 CREATE TABLE aulaxasignatura(
-    seccion char(1) not null constraint pk_aulaxasignatura primary key,
+    letra_seccion char(1) not null,
+    numero_grado smallint,
+    denominacion_nivel varchar(100),
     nivel_aula smallint not null,
     orden_aula smallint not null,
     denominacion_asignatura varchar(100) not null,
     annio int not null,
-    constraint fk_seccion_aulaxasignatura foreign key (seccion) references seccion(letra)
+    constraint pk_aulaxasignatura primary key(letra_seccion, numero_grado, denominacion_nivel),
+    constraint fk_seccion_aulaxasignatura foreign key (letra_seccion, numero_grado, denominacion_nivel) references seccion(letra, numero_grado, denominacion_nivel)
     ON delete cascade ON update cascade,
     constraint fk_aula_aulaxasignatura foreign key(nivel_aula, orden_aula) references clase(nivel_aula, orden_aula)
     ON delete cascade ON update cascade,
@@ -157,12 +167,14 @@ CREATE TABLE docentexasignatura(
 --TABLA responsable de seccion
 CREATE TABLE responsable_seccion(
     dui_docente char(10) not null,
-    seccion char(1) not null,
     semestre smallint not null,
-    constraint pk_responsable_seccion primary key (dui_docente, seccion, semestre),
+    letra_seccion char(1) not null,
+    numero_grado smallint,
+    denominacion_nivel varchar(100),
+    constraint pk_responsable_seccion primary key (dui_docente, semestre, letra_seccion, numero_grado, denominacion_nivel),
     constraint fk_docente_responsable foreign key (dui_docente) references docente(dui)
     ON delete cascade ON update cascade,
-    constraint fk_seccion_responsable foreign key (seccion) references seccion(letra)
+    constraint fk_seccion_responsable foreign key (letra_seccion, numero_grado, denominacion_nivel) references seccion(letra, numero_grado, denominacion_nivel)
     ON delete cascade ON update cascade,
     constraint fk_semestre_responsable foreign key (semestre) references semestre(orden)
     ON delete cascade ON update cascade
@@ -265,12 +277,14 @@ CREATE TABLE otorga(
 --TABLA matricula
 CREATE TABLE matricula(
     nie_alumno int not null,
-    seccion char(1) not null,
+    letra_seccion char(1) not null,
+    numero_grado smallint,
+    denominacion_nivel varchar(100),
     annio int not null,
-    constraint pk_matricula primary key (nie_alumno, seccion),
+    constraint pk_matricula primary key (nie_alumno, letra_seccion, numero_grado, denominacion_nivel),
     constraint fk_alumno_matricula foreign key (nie_alumno) references alumno(nie)
     ON delete cascade ON update cascade,
-    constraint fk_seccion_matricula foreign key (seccion) references seccion(letra)
+    constraint fk_seccion_matricula foreign key (letra_seccion, numero_grado, denominacion_nivel) references seccion(letra, numero_grado, denominacion_nivel)
     ON delete cascade ON update cascade,
     constraint fk_annio_matricula foreign key (annio) references annio(numero)
     ON delete cascade ON update cascade
