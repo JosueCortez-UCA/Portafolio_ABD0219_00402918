@@ -42,10 +42,10 @@ CREATE TABLE clase(
     ON delete cascade ON update cascade
 );
 
---TABLA lab-cc
-CREATE TABLE lab-cc(
+--TABLA laboratorios y centro de computo
+CREATE TABLE lab_cc(
     codigo_aula smallint not null constraint pk_clase primary key,
-    constraint fk_aula_lab-cc foreign key(codigo_aula) references aula(nivel, orden)
+    constraint fk_aula_lab_cc foreign key(codigo_aula) references aula(nivel, orden)
     ON delete cascade ON update cascade
 );
 
@@ -77,7 +77,7 @@ CREATE TABLE asignatura(
 );
 
 --TABLA año
-CREATE TABLA annio(
+CREATE TABLE annio(
     numero int constraint pk_annio primary key
 );
 
@@ -134,7 +134,7 @@ CREATE TABLE aulaxasignatura(
 
 --TABLA docenteXasignatura
 CREATE TABLE docentexasignatura(
-    dui-docente char(10) not null,
+    dui_docente char(10) not null,
     denominacion_asignatura varchar(100) not null,
     annio int not null,
     rol varchar(30),
@@ -322,7 +322,7 @@ CREATE TABLE bitacora_parte(
 	constraint fk_macrobitacora foreign key (correlativo_macrobitacora)
 	references bitacora(correlativo) on delete cascade on update cascade,
 	constraint fk_subbitacora foreign key (correlativo_subbitacora)
-	references bitacora(correlativo) on delete cascade on update cascade)
+	references bitacora(correlativo) on delete cascade on update cascade
 );
 
 --TABLA anota
