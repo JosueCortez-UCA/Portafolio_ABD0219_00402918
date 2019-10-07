@@ -37,16 +37,25 @@ CREATE TABLE aula(
 
 --TABLA clase
 CREATE TABLE clase(
-    codigo_aula smallint not null constraint pk_clase primary key,
-    constraint fk_aula_clase foreign key(codigo_aula) references aula(nivel, orden)
+    id int not null constraint pk_clase primary key,
+    nivel_aula smallint not null,
+    orden_aula smallint not null,
+    constraint fk_aula_clase foreign key(nivel_aula, orden_aula) references aula(nivel, orden)
     ON delete cascade ON update cascade
 );
 
 --TABLA laboratorios y centro de computo
 CREATE TABLE lab_cc(
-    codigo_aula smallint not null constraint pk_clase primary key,
-    constraint fk_aula_lab_cc foreign key(codigo_aula) references aula(nivel, orden)
+    id int not null constraint pk_lab_cc primary key,
+    nivel_aula smallint not null,
+    orden_aula smallint not null,
+    constraint fk_aula_lab_cc foreign key(nivel_aula, orden_aula) references aula(nivel, orden)
     ON delete cascade ON update cascade
+);
+
+--TABLA año
+CREATE TABLE annio(
+    numero int constraint pk_annio primary key
 );
 
 --TABLA docente
@@ -76,11 +85,6 @@ CREATE TABLE asignatura(
     ON delete cascade ON update cascade
 );
 
---TABLA año
-CREATE TABLE annio(
-    numero int constraint pk_annio primary key
-);
-
 --TABLA semestre
 CREATE TABLE semestre(
     orden smallint constraint pk_semestre primary key,
@@ -92,12 +96,13 @@ CREATE TABLE semestre(
 --TABLA reserva de labs y centro de computo
 CREATE TABLE reserva(
     id int not null constraint pk_reserva primary key,
-    codigo_aula smallint not null,
+    nivel_aula smallint not null,
+    orden_aula smallint not null,
     dui_docente char(10) not null,
     fecha date,
     hora_inicio time,
     hora_fin time,
-    constraint fk_aula_reserva foreign key (codigo_aula) references aula(nivel, orden)
+    constraint fk_aula_reserva foreign key (nivel_aula, orden_aula) references aula(nivel, orden)
     ON delete cascade ON update cascade,
     constraint fk_docente_reserva foreign key (dui_docente) references docente(dui)
     ON delete cascade ON update cascade
@@ -106,11 +111,12 @@ CREATE TABLE reserva(
 --TABLA aulaXseccion
 CREATE TABLE aulaxseccion(
     seccion char(1) not null constraint pk_aulaxseccion primary key,
-    codigo_aula smallint not null,
+    nivel_aula smallint not null,
+    orden_aula smallint not null,
     annio int not null,
     constraint fk_seccion_aulaxseccion foreign key (seccion) references seccion(letra)
     ON delete cascade ON update cascade,
-    constraint fk_aula_aulaxseccion foreign key (codigo_aula) references clase(codigo_aula)
+    constraint fk_aula_aulaxseccion foreign key(nivel_aula, orden_aula) references clase(nivel_aula, orden_aula)
     ON delete cascade ON update cascade,
     constraint fk_annio_aulaxseccion foreign key (annio) references annio(numero)
     ON delete cascade ON update cascade
@@ -119,12 +125,13 @@ CREATE TABLE aulaxseccion(
 --TABLA aulaXasignatura
 CREATE TABLE aulaxasignatura(
     seccion char(1) not null constraint pk_aulaxseccion primary key,
-    codigo_aula smallint not null,
+    nivel_aula smallint not null,
+    orden_aula smallint not null,
     denominacion_asignatura varchar(100) not null,
     annio int not null,
     constraint fk_seccion_aulaxasignatura foreign key (seccion) references seccion(letra)
     ON delete cascade ON update cascade,
-    constraint fk_aula_aulaxasignatura foreign key (codigo_aula) references clase(codigo_aula)
+    constraint fk_aula_aulaxasignatura foreign key(nivel_aula, orden_aula) references clase(nivel_aula, orden_aula)
     ON delete cascade ON update cascade,
     constraint fk_asignatura_aulaxasignatura foreign key (denominacion_asignatura) references asignatura(denominacion)
     ON delete cascade ON update cascade,
