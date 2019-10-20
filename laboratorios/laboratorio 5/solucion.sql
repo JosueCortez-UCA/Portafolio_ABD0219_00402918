@@ -65,6 +65,7 @@ BEGIN
         RETURN false;
     END IF;
 END;
+$$ LANGUAGE plpgsql;
 
 -- Pruebas
 
