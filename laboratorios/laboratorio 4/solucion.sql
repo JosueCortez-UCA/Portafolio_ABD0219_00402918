@@ -63,3 +63,47 @@ psql moonbucks moonbucks
 SELECT clase.relname, p.*
 FROM proyecto p, pg_class clase
 WHERE p.tableoid = clase.oid;
+
+/*
+    Ejercicio 6
+*/
+\q
+psql
+CREATE USER uca WITH PASSWORD 'wii' CREATEDB;
+GRANT CONNECT ON DATABASE powerrepuestos TO uca;
+GRANT CONNECT ON DATABASE laatencao TO uca;
+GRANT CONNECT ON DATABASE simon TO uca;
+GRANT CONNECT ON DATABASE moonbucks TO uca;
+
+/*
+    Ejercicio 7
+*/
+GRANT USAGE ON SCHEMA PUBLIC TO uca;
+
+/*
+    Ejercicio 8
+*/
+ALTER USER uca WITH SUPERUSER;
+
+/*
+    Ejercicio 9
+*/
+\q
+psql powerrepuestos uca
+CREATE SCHEMA gestion;
+
+\q
+psql laatencao uca
+CREATE SCHEMA gestion;
+
+\q
+psql simon uca
+CREATE SCHEMA gestion;
+
+\q
+psql moonbucks uca
+CREATE SCHEMA gestion;
+
+/*
+    Ejercicio 10
+*/
