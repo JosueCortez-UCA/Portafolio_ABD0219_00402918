@@ -245,7 +245,7 @@ BEGIN
     RAISE NOTICE 'Al borrar % de % lo hemos borrado de la tabla de proyectos', OLD.codigo_proyecto,TG_RELNAME;
     RETURN OLD;
 END;
-
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER proyecto_erp AFTER DELETE ON erp FOR EACH ROW EXECUTE PROCEDURE borra_proyecto_superclase();
 CREATE TRIGGER proyecto_web AFTER DELETE ON web FOR EACH ROW EXECUTE PROCEDURE borra_proyecto_superclase();
@@ -293,6 +293,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER proyecto_erp_no_en_otras BEFORE INSERT OR UPDATE ON erp FOR EACH ROW EXECUTE PROCEDURE proyecto_ya_esta_en_otra_subclase();
 CREATE TRIGGER proyecto_venta_almacen_no_en_otras BEFORE INSERT OR UPDATE ON venta_almacen FOR EACH ROW EXECUTE PROCEDURE proyecto_ya_esta_en_otra_subclase();
@@ -333,6 +334,7 @@ BEGIN
         RETURN NEW;
     END IF;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER proyecto_en_subclase BEFORE INSERT OR UPDATE ON proyecto FOR EACH ROW EXECUTE PROCEDURE comprueba_proyecto_subclase();
 
