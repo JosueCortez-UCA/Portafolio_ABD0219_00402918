@@ -89,6 +89,10 @@ ALTER USER uca WITH SUPERUSER;
     Ejercicio 9
 */
 \q
+psql ucasoft uca
+CREATE SCHEMA gestion;
+
+\q
 psql powerrepuestos uca
 CREATE SCHEMA gestion;
 
@@ -106,4 +110,43 @@ CREATE SCHEMA gestion;
 
 /*
     Ejercicio 10
+    hacer esto por cada base
 */
+CREATE TYPE gestion.clase AS ENUM ('select','insert','delete','update');
+
+CREATE TYPE gestion.tipo_sentencia AS (
+    clase clase,
+    cadena text
+);
+
+/*
+    Ejercicio 11
+*/
+CREATE TABLE gestion.auditoria(
+    fechahora timestamp not null constraint pk_auditoria primary key,
+    sentencia gestion.tipo_sentencia,
+    pantalla text[]
+);
+
+/*
+    Ejercicio 12
+*/
+DROP TABLE gestion.auditoria;
+CREATE TABLE gestion.auditoria(
+    fechahora timestamp not null,
+    sentencia gestion.tipo_sentencia,
+    pantalla text[]
+) PARTITION BY RANGE (fechahora);
+
+CREATE TABLE gestion.auditoria_2019 PARTITION OF gestion.auditoria FOR VALUES FROM ('01/01/2019') TO ('01/01/2020');
+CREATE TABLE gestion.auditoria_2020 PARTITION OF gestion.auditoria FOR VALUES FROM ('01/01/2020') TO ('01/01/2021');
+-- da error el "default" CREATE TABLE gestion.auditoria_default PARTITION OF gestion.auditoria DEFAULT;
+
+/*
+    Ejercicio 13
+*/
+INSERT INTO gestion.auditoria VALUES(
+    generate_series('01-01-2019 00:00'::timestamp,'31-12-2020 12:00','2 hours'),
+    ('select', 'la cadena de texto'),
+    '{"pantalla1", "pantalla2"}'
+);
