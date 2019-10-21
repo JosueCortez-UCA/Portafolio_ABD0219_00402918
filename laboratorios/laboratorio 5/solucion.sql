@@ -108,6 +108,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER si_representa_debe_trabajar BEFORE INSERT OR UPDATE ON departamento FOR EACH ROW EXECUTE PROCEDURE representa_trabaja();
 CREATE TRIGGER si_representa_no_cambia_trabajo BEFORE UPDATE ON miembro FOR EACH ROW EXECUTE PROCEDURE representa_trabaja();
@@ -194,6 +195,7 @@ BEGIN
     END IF;
     RETURN NEW;
 END;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER miembro_trabaja_subclases AFTER INSERT OR UPDATE ON miembro FOR EACH ROW EXECUTE PROCEDURE miembro_subclase_trabaja();
 
