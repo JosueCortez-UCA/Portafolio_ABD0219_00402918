@@ -69,21 +69,35 @@ WHERE p.tableoid = clase.oid;
 */
 \q
 psql
-CREATE USER uca WITH PASSWORD 'wii' CREATEDB;
-GRANT CONNECT ON DATABASE powerrepuestos TO uca;
-GRANT CONNECT ON DATABASE laatencao TO uca;
-GRANT CONNECT ON DATABASE simon TO uca;
-GRANT CONNECT ON DATABASE moonbucks TO uca;
+CREATE USER uca WITH PASSWORD 'wii';
+GRANT CREATE, CONNECT ON DATABASE ucasoft TO uca;
+GRANT CREATE, CONNECT ON DATABASE powerrepuestos TO uca;
+GRANT CREATE, CONNECT ON DATABASE laatencao TO uca;
+GRANT CREATE, CONNECT ON DATABASE simon TO uca;
+GRANT CREATE, CONNECT ON DATABASE moonbucks TO uca;
 
 /*
     Ejercicio 7
 */
-GRANT USAGE ON SCHEMA PUBLIC TO uca;
+\c ucasoft
+ALTER SCHEMA PUBLIC OWNER TO uca;
+
+\c powerrepuestos
+ALTER SCHEMA PUBLIC OWNER TO uca;
+
+\c laatencao
+ALTER SCHEMA PUBLIC OWNER TO uca;
+
+\c simon
+ALTER SCHEMA PUBLIC OWNER TO uca;
+
+\c moonbucks
+ALTER SCHEMA PUBLIC OWNER TO uca;
 
 /*
     Ejercicio 8
 */
-ALTER USER uca WITH SUPERUSER;
+GRANT ALL ON ALL TABLES IN SCHEMA PUBLIC TO uca;
 
 /*
     Ejercicio 9
