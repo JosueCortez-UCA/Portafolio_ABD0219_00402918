@@ -1,0 +1,31 @@
+¡Magnífico! 
+
+Muchas gracias por resolver el desafío que te planteé, ahora estoy más tranquilo en cuanto a tu cooperación, pero sinceramente aún siento el aliento de Ale sobre mi espalda.
+
+Tengo una buena noticia: Ada logró comprender el programa de detonación de las bombas que encontró en el laboratorio y me ha compartido el siguiente código... solo me dijo que estaba a punto de subir a un avión rumbo a Kiribati y que lo ejecutara para desactivar el proceso, que sacara hasta el último centavo de mi cuenta, comprara el boleto y me reuniera con ella en cuanto pueda, porque no quiere ni imaginar la ira de Ale cuando descubra que interrumpimos su plan: hará cualquier barbaridad para saber quiénes somos y acabar con nosotros.
+
+Necesito que veas cómo funciona (sinceramente siempre me cuesta entender todo lo que Ada programa) lo compilés y ejecutés porque en estos momentos te estoy escribiendo con el celular, no tengo una compu a mano.
+
+Por si no tienes g++ instalado, ejecuta (como root o con sudo):
+
+apt-get install g++
+ 
+Luego descarga el código de acá: https://drive.google.com/file/d/1lpisaL74-f6esmXEFozfY-nEPKvLcb13/view?usp=sharing
+
+Compílalo:
+    
+g++ DCode.c -pthread
+
+Y para correrlo:
+
+./a.out
+
+¿Funcionó? ¿Sí? uffff... Ada es lo máximo, no sabría decir quién es más hacker, si ella o Lisbeth Salander.
+
+Bueno, creo que después de esto ya podemos tener algo de paz, al menos en cuanto a las maléficas intenciones de Ale de destruir la UCA... otra cosa es lo que nos pase a nosotros... Ada ya está a salvo, y mientras él siga sin saber quién soy, todo estará bien... y la verdad que la idea de irme a vivir a un atolón con Ada me fascina... no ¡si al final se lo tendré que agradecer a Ale! XD
+
+Si tengo alguna información adicional para poder atrapar a Ale descuida que te la haré saber.
+
+Muchísimas gracias siempre por tu colaboración,
+
+Kurt

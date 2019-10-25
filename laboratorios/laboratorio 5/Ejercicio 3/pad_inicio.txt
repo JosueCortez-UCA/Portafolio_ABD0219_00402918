@@ -1,0 +1,59 @@
+No sé qué me sucede.
+
+Ayer sinceramente estaba cagado de miedo, sin embargo hoy lo que me domina es un sentimiento de tristeza.
+
+¿Por qué, Ale? ¿Qué te sucedió?
+
+Te voy a contar un poco más... pero wow, ahora que lo pienso, es algo largo de escribir, mejor te lo cuento en un audio: 
+    
+https://drive.google.com/open?id=1WARAFeekGWD2c8EWTZtYE_jIbJq3YliP
+
+Independientemente de que fuéramos tan amigos con Ale, de que él sea un súper hacker y que nadie podría ni siquiera imaginar que tuviera tan macabros planes, le voy a detener: estoy decidido a ello... lo peor es que estoy seguro que esa idea de "regalar" el título destruyendo la universidad ha convencido a mucha gente... ¿qué opinás? ¿será que puedo confíar en vos? sí, ya sé que resolviste dos problemas pero... no, no estoy totalmente convencido: si tu vida estuviera apostada en este juego como lo está la mía, sin duda me comprenderías. 
+
+En tal sentido te pido que resuelvas otro desafío más, así sabré de qué lado estás.
+
+Existe un potencial problema de incoherencia entre la clasificación de miembro en sus subclases y el atributo denominacion_departamento... por ejemplo, sería incorrecto que un miembro de la subclase ingenieria tuviera en el atributo mencionado en la superclase "ventas". En tal sentido hay que desarrollar una función (y un trigger que la ejecute) que haga lo siguiente:
+1) Cuando se inserte en la tabla miembro debe comprobarse la coincidencia del departamento expresado en el atributo con la existencia de este miembro en la subclase correcta. Si no está, se debe rechazar la inserción.
+2) Cuando se actualice el atributo departamento de miembro, entonces debe moverse al miembro a la subclase que corresponda. Esto implica borrar el miembro de la subclase y reinsertarlo donde corresponde. Ten en cuenta que:
+    a) ya existe un trigger que al borrar de una subclase (ingenieria, ventas o gestion) borra automáticamente de la superclase miembro, 
+    b) hay otro trigger que impide que se inserte directo en la superclase para validar la totalidad de esa especialización así como que se respete que
+    la especialización es disjunta: esto implica que dentro de la función que programes, cuando quieras insertar en una subclase tendrás que hacer
+    una transacción con el correspondiente FK diferido.
+
+La función deberá tener la siguiente declaración:
+
+CREATE OR REPLACE FUNCTION miembro_subclase_trabaja() RETURNS trigger AS $$
+
+Y el trigger sería así:
+
+CREATE TRIGGER miembro_trabaja_subclases AFTER INSERT OR UPDATE ON miembro FOR EACH ROW EXECUTE PROCEDURE miembro_subclase_trabaja();
+ 
+Una vez creada la función y declarado el trigger puedes probar lo que hiciste con los siguientes datos:
+    
+BEGIN;
+
+SET CONSTRAINTS fk_gestion_miembro DEFERRED;
+
+insert into gestion values ('08872144-5'); 
+insert into miembro values ('08872144-5','Astrid','Ventas'); 
+
+COMMIT;
+
+La transacción anterior fallará por haber insertado en gestión y luego indicar que era de ventas.
+
+BEGIN;
+
+SET CONSTRAINTS fk_gestion_miembro DEFERRED;
+
+insert into gestion values ('08872144-5'); 
+insert into miembro values ('08872144-5','Astrid','Gestión'); 
+
+COMMIT;
+
+Esta sí funcionará bien.
+
+Prueba además que funciona la actualización de subclase:
+    
+update miembro set denominacion_departamento = 'Ventas' where DUI='08872144-5';
+
+Gracias de nuevo por tu ayuda, espero que entiendas mi precaución.

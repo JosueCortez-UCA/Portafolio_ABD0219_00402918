@@ -1,0 +1,29 @@
+Hey qué ondas, soy Ada Jarvis y, sinceramente, me importa un semerendo pito quien eres vos, seguro que te envió Kurt porque aquel c.... debe estar bien escondido, y sí, al menos por esta vez, tiene un buen motivo para que no se le vea el pelo. 
+
+Entonces ponele coco a lo siguiente, la situación es muy grave y es importante que te enfoqués: el idiota de Kurt descubrió el plan de Ale y, típico en él, no pudo mantener el pico cerrado, así que aquí estás vos, tan involucrado/a como yo... con lo tranquila que estaba... si Ale quería mandar a volar cada ladrillo de la UCA, chivo pues, ¡no era mi problema!... bueno, la verdad... reconozco que, sí, sí lo era, y por eso ayer le dije a Kurt que he descubierto el código de detonación que el maldito bastardo de Ale había estado probando en el lab, así que ahorita lo estoy revisando.
+
+Shit, me pareció ver que por ahí viene Ale: bueno, no tengo mucho tiempo, lo último que me dijo Kurt es que se comunicaba con ustedes haciendo programitas de juguete en Administración de Bases de Datos... de hecho, ya vi lo que hiciste y sorry, mejor seguí practicando con algo de mayor nivel ¿no crees? ¡no es por gusto que estás en segundo!.
+
+Te propongo que resuelvas lo siguiente: hay una relación entre los miembros y el departamento en el que trabajan, y otra en sentido contrario para aquellos miembros que son representantes del departamento. Sería absurdo que una persona representante de un departamento trabaje para otro departamento. Por ello deberás crear una función con el siguiente encabezado:
+
+CREATE OR REPLACE FUNCTION representa_trabaja() RETURNS trigger AS $$
+    
+Por un lado, la función deberá rechazar la inserción o actualización de un departamento con un representante que no trabaje para dicho departamento, por otro lado, si hubiera una actualización del departamento en el que un miembro trabaja, ésta deberá rechazarse si resultara que el miembro es el representante del mismo. 
+
+La idea es que hagas dos triggers, uno para cada caso, y usar la misma función para ambos... ¡vaya cara ponés! es así, mirá ve:
+
+CREATE TRIGGER si_representa_debe_trabajar BEFORE INSERT OR UPDATE ON departamento FOR EACH ROW EXECUTE PROCEDURE representa_trabaja();
+CREATE TRIGGER si_representa_no_cambia_trabajo BEFORE UPDATE ON miembro FOR EACH ROW EXECUTE PROCEDURE representa_trabaja();
+
+Puedes probar cada caso con estas consultas:
+
+update miembro set denominacion_departamento ='Ventas' where dui ='34531178-8';
+update departamento set dui_miembro_representante = '34531178-8' where denominacion='Ventas';
+
+Sí, claaaro, claro, sin duda, todo lo anterior ya lo sabías vedaaa? dale pex, a picar código que urge. Cuando ya lo tengas funcionando, prueba el siguiente caso que sí funciona porque el miembro ya pertenece al departamento que va a representar:
+
+update departamento set dui_miembro_representante = '02112463-5' where denominacion='Gestión';
+
+Cuando terminés, mirá en la tabla esa que dejó Kurt, kurt_out... siempre fue mero narciso ese bicho... pero algo tiene que me cae bien... meh, son babosadas, la onda es que ahí te saldrá + info para que Kurt siga con su "delicado asuntito": yo por el momento desaparezco y ni modo, me toca destruir hasta mi pinche compu para que ese maldito de Ale no me rastree.
+
+Bais.

@@ -1,0 +1,44 @@
+Hola, soy Kurt.
+
+Gracias ante todo por llegar hasta acá. La situación es sumamente delicada y aprecio vuestro apoyo en este asunto... me siento solo y, sinceramente, tengo mucho miedo.
+
+Pensaba que conocía a Ale Rav, siempre fue algo reservado, extraño, pero jamás imaginé lo que acaba de decir. Por ahora para referirme a él creo que usaré el alias que él eligió, definitivamente no puedo dar su nombre real aún: no tengo más pruebas que mi propio testimonio y no sé qué conexiones podrá tener en la FGR o la PNC, o la misma UCA... creo que ha chantajeado a mucha gente, estoy seguro de que instaló troyanos por todos lados para poder obtener información comprometedora y así tener poder e influencia perversa, así que no me atrevo a denunciarlo, al menos no aún. Por supuesto, yo tampoco les voy a dar mi nombre real: más de alguno/a de ustedes puede ser cómplice de Ale, cualquiera se podría ver seducido por ese discurso absurdo.
+
+Juela... si les soy sincero, lo que creo haber descubierto me hace sentir prácticamente como que estoy en una película de terror y que yo soy el primer personaje (sí, el incauto), al que envían primero al otro barrio sin pena ni gloria... así que no, no me voy a quedar de brazos cruzados ante la situación, pero extremaré tanto como pueda mi seguridad, quiero disfrutar la mucha vida que espero me quede aún.
+
+Dicho eso, para poderles dar más detalles necesito comprobar que efectivamente son de total confianza y comunicarnos a través de un canal que Ale no pueda ni imaginar: sé que van a hacer un laboratorio en la asignatura de Administración de Bases de Datos, así que lo utilizaré para comunicarme con ustedes según resuelven algunos ejercicios que les iré presentando. 
+
+Esto será (espero) suficientemente seguro para ustedes y para mi.
+
+No perdamos más tiempo, tenemos que pasar a la acción: conéctense al servidor dei2.uca.edu.sv por medio de https://dei2.uca.edu.sv/phppgadmin, utilicen como nombre de usuario su carnet de estudiante con una u delante (u#########), la base de datos en la que pueden entrar tiene este mismo nombre. Su contraseña es el número de carnet (sin la u). Si están fuera en los laboratorios también pueden conectarse con un cliente gráfico, o psql para ejecutar los comandos y revisar el resultado.
+
+Observen que los objetos que están en su base de datos son los mismos que los de las prácticas que han estado haciendo en clase de ABD... sí, por fortuna tengo acceso al Moodle y pude obtener tales archivos, así será mucho más rápido de explicarles... no quiero pasar más de 30 minutos conectado a Internet en el mismo lugar.
+
+Hay una tabla, creo que la conocen bien: miembro. Su profesor se las da de tenerlo todo bajo control pero en realidad es bastante descuidado, para esta tabla seguro que inventó los números de DUI, sí, ya ví: si están correctos es por pura casualidad. Necesito que programen una función que valide un DUI que se le pase como parámetro y que devuelva verdadero si es correcto o falso si no lo es. Deberá validar longitud (10 caracteres), formato (todos dígitos numéricos con solo un guión en la 9 posición) y el dígito de comprobación debe ser correcto utilizando el algoritmo siguiente:
+
+Ejemplo: 01771967-8 -> Dígito verificador: 8
+
+Posición -> 9     8     7     6     5     4     3      2
+DUI      -> 0     1     7     7     1     9     6      7
+
+suma  = (9*0)+(8*1)+(7*7)+(6*7)+(5*1)+(4*9)+(3*6)+(2*7) => 172
+resto = suma MÓDULO 10 => MOD(172,10) = 2
+resta = 10 - resto => 10 - 2 = 8
+Dígito verificador=Resta (8=8) => DUI valido.
+    
+Es muy importante que la función se cree con el siguiente encabezado:
+     
+CREATE OR REPLACE FUNCTION valida_DUI(DUI VARCHAR) RETURNS BOOLEAN AS $$
+
+Hagan varias pruebas de la función, solo la última de las siguientes consultas devolverá el valor t (true):
+select valida_DUI('049262044-5');
+select valida_DUI('04-2620425');
+select valida_DUI('04a26244-5');
+select valida_DUI('04926243-5');
+select valida_DUI('04926244-5');
+
+Cuando ya funcione hagan la comprobación de cuántos DUI están correctos en la tabla miembro, e ingresen el resultado (un solo dato) en la tabla duisvalidos. Si es el número correcto y desarrollaron la función que les solicité, revisen la tabla kurt_out: espero estar vivo para poder darles el enlace a las siguientes instrucciones en dicha tabla.
+
+Y gracias por ayudarme.
+
+Kurt.
