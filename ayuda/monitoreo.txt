@@ -1,0 +1,243 @@
+/* Monitoreo */
+
+-- Revisemos algunos comandos imprescindibles 
+top (c para ver el comando entero, o para filtrar COMMAND=postgres, u por usuario, 1 ver carga por núcleo)
+
+-- o podemos instalar htop, que es mas "nice"
+
+apt-get install htop
+
+htop
+
+-- Un truquito para simular que tenemos una BD entretenida: pgbench
+
+\c - admin
+
+postgres=# create database bench;
+
+-- Poblemos la BD de prueba:
+
+postgres$ pgbench -i bench -U admin
+
+-- A trabajar:
+
+-c => clientes en paralelo
+-t => # de transacciones a ejecutar
+-T => tiempo de ejecución
+-S => solo ejecutar selects
+
+postgres$ pgbench -U admin -c10 -T300 bench
+
+-- ==================== información en la meta base de datos ================
+
+
+-- Antes veamos lo que ocupan las bases de datos en disco (a las que tengamos acceso)
+
+SELECT d.datname AS Name, pg_catalog.pg_get_userbyid(d.datdba) AS Owner,
+  CASE WHEN pg_catalog.has_database_privilege(d.datname, 'CONNECT')
+    THEN pg_catalog.pg_size_pretty(pg_catalog.pg_database_size(d.datname)) 
+    ELSE 'No Access' 
+  END AS SIZE 
+FROM pg_catalog.pg_database d 
+ORDER BY 
+  CASE WHEN pg_catalog.has_database_privilege(d.datname, 'CONNECT') 
+    THEN pg_catalog.pg_database_size(d.datname)
+    ELSE NULL 
+END;
+
+-- Dentro de una BD, podemos también calcular el tamaño de las tablas
+
+SELECT nspname || '.' || relname AS "relation",
+   pg_size_pretty(pg_total_relation_size(C.oid)) AS "total_size"
+ FROM pg_class C
+ LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace)
+ WHERE nspname NOT IN ('pg_catalog', 'information_schema')
+   AND C.relkind <> 'i'
+   AND nspname !~ '^pg_toast'
+ ORDER BY pg_total_relation_size(C.oid) DESC;
+
+-- Ahora sí, veamos cómo está el panorama en caliente. Comencemos con la vista pg_stat_activity
+
+SELECT datname as database,
+       pid,
+       usename as username,
+       application_name as application,
+       client_addr as client_address,
+       query
+FROM pg_stat_activity;
+
+-- Acciones en caso de que algo esté atascado: eliminar una consulta pg_cancel_backend
+
+SELECT pg_cancel_backend(pid) 
+FROM pg_stat_activity 
+WHERE application_name='pgbench';
+
+-- También podemos matar todo el proceso (la conexión) con pg_terminate_backend
+
+-- por nombre de aplicación
+SELECT pg_terminate_backend(pid) 
+FROM pg_stat_activity 
+WHERE application_name='pgbench';
+  
+-- por base de datos
+WHERE datname = 'bench';
+
+-- por usuario
+WHERE usename = 'admin';
+
+-- ¡fuera todo el mundo! (menos yo)
+-- solo dejar mi proceso vivo
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE pid <> pg_backend_pid() 
+
+-- solo dejar lo que mi usuario esté haciendo
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE usename <> current_user;
+
+--  Hay consultas que estén desde tiempos inmemoriales?
+SELECT pid, age(clock_timestamp(), query_start), usename, query 
+FROM pg_stat_activity 
+WHERE query != '<IDLE>' AND query NOT ILIKE '%pg_stat_activity%' 
+ORDER BY query_start desc;
+
+-- Veamos si hay alguna que supere un tiempo dado (p.e. 2 minutos)
+SELECT now() - query_start as "runtime", usename, datname, wait_event, state, query
+FROM  pg_stat_activity
+WHERE now() - query_start > '2 minutes'::interval
+ORDER BY runtime DESC;
+
+-- ==================== extensión pg_stat_statements ================
+
+-- La activamos en postgresql.conf y hacemos restart
+
+shared_preload_libraries = 'pg_stat_statements'
+
+pg_stat_statements.max = 10000
+pg_stat_statements.track = all # por defecto está 'top', lo que no incluye consultas que estén dentro de funciones
+
+-- Creamos la extensión (como usuario postgres)
+
+CREATE EXTENSION pg_stat_statements;
+
+-- Reinicio de estadísticas
+
+SELECT pg_stat_statements_reset();
+
+-- Podemos simular con pgbench
+
+-- La virtud de pg_stat_statements es que es capaz de agrupar consultas similares (convierte en variables valores directos)
+
+SELECT query, calls, total_time, rows, 100.0 * shared_blks_hit /
+       nullif(shared_blks_hit + shared_blks_read, 0) AS hit_percent
+FROM pg_stat_statements ORDER BY total_time DESC LIMIT 5;
+
+-- El dato más importante es hit_percent, pues si no es 100 o aproximado indica que se está utilizando información que no está en la cache (RAM), y por tanto esa consulta debe intentarse optimizar, además de indicar eventualmente que se necesita aumentar la cantidad de recursos al SGBD.
+
+-- Para ver mejor los resultados de la consulta anterior en psql puede ser útil utilizar la visualización expandida (\x)
+
+-- ==================== revisión de la bitácora ================
+
+-- Por defecto solo se guardan acciones de inicio, paro o recarga del SGBD, esto generalmente es económico, pero MUY INSUFICIENTE
+
+-- los parámetros están en la sección REPORTING AND LOGGING de postgresql.conf. Los mínimos a tomar en cuenta para poder hacer auditoría posterior son:
+
+log_connections
+log_disconnections
+log_duration
+log_statement
+
+-- === PgBadger: utilidad para que la bitácora no nos aplaste el ánimo ===
+
+apt-get install pgbadger
+
+-- parámetros en postgresql.conf
+
+-- Ojo, si está activo log_statements no son procesados por pgbadger
+
+# log_statement
+log_line_prefix = '%t [%p]: user=%u,db=%d,app=%a,client=%h '
+log_min_duration_statement = 0
+log_checkpoints = on
+log_connections = on
+log_disconnections = on
+log_lock_waits = on
+log_temp_files = 0
+log_autovacuum_min_duration = 0
+log_error_verbosity = default
+
+-- mensajes sin localización
+lc_messages = 'C'
+
+-- comencemos con un log limpio y hagamos un restart
+
+logrotate -f /etc/logrotate.d/postgresql-common
+/etc/init.d/postgresql restart
+
+-- ejecutemos un par de pgbench para ver cómo funciona
+pgbench -U admin -c10 -S -T30 bench
+pgbench -U admin -c10 -T30 bench
+
+-- hoy sí, haz magia pgbadger
+pgbadger /var/log/postgresql/postgresql-11-main.log
+
+-- Abrimos out.html (por defecto está en el directorio donde ejecutamos pgbadger)
+
+-- ========= PoWA: un potente analizador de carga =========
+
+-- Instalación de paquetes
+
+apt-get install postgresql-contrib postgresql-11-powa postgresql-11-pg-qualstats postgresql-11-pg-stat-kcache postgresql-11-hypopg
+
+-- Cambios en postgresql.conf (y restart posterior)
+
+shared_preload_libraries='pg_stat_statements,powa,pg_stat_kcache,pg_qualstats'
+
+-- En  BD como usuario postgres
+
+CREATE DATABASE powa ;
+
+\c powa
+CREATE EXTENSION pg_stat_statements;
+CREATE EXTENSION btree_gist;
+CREATE EXTENSION powa;
+CREATE EXTENSION pg_qualstats;
+CREATE EXTENSION pg_stat_kcache;
+CREATE EXTENSION hypopg;
+
+CREATE ROLE powa SUPERUSER LOGIN PASSWORD 'supapowa' ;
+
+-- Por cada base de datos, se sugiere activar la extensión hypopg
+
+\c bench
+CREATE EXTENSION hypopg;
+
+-- Interfaz web 
+apt-get install python-pip python-psycopg2
+pip install powa-web
+
+-- Ojo, la versión actual (3) da un error en las gráficas, requiere un downgrade de una librería, a partir de la 4 estará resuelto
+
+pip install SQLAlchemy==1.2.19
+
+-- crear /etc/powa-web.conf (si ponemos user/pass solo habrá que pulsar login en la pantalla de acceso)
+
+--- 8< ---
+servers={
+  'main': {
+    'host': 'localhost',
+    'port': '5432',
+    'database': 'powa',
+    'username' : 'powa',
+    'password' : 'supapowa',
+    'query': {'client_encoding': 'utf8'}
+  }
+}
+
+cookie_secret="SUPASECRET_STRING"
+--- >8 ---
+
+-- Y (como root) se ejecuta:
+
+powa-web

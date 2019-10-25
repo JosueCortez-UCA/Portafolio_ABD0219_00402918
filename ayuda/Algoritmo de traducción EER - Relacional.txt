@@ -1,0 +1,50 @@
+Algoritmo de traducción EER -> Relacional
+[Editar]
+
+Iterar:
+
+1) Entidades simples
+
+Se crea una relación por cada Entidad simple. En la relación se deben incluir todos los atributos simples, derivados y, en el caso de los atributos compuestos, cada una de las partes de dichos atributos. Si hay un atributo multivaluado que modela el ingreso de varios textos/números variables que el usuario escribirá (no la selección de un catálogo) se puede indicar que será una matriz/array incluyendo en este caso el atributo entre [ ].
+
+2) Entidades débiles
+
+Se crea una relación para la Entidad débil. Además de la clave débil se incluye la clave primaria de la Entidad propietaria, que será clave externa, formando ambas la clave primaria de la relación, y se agregan todos los atributos de la Entidad débil. 
+
+3) Relaciones 1:1
+
+Se debe llevar la clave primaria de una relación a la otra como clave externa. En el caso de que solo una de las dos Entidades participe totalmente en la Relación, es en ésta donde debe ubicarse la clave externa (para poder exigir que no haya valores nulos en dicho atributo). Los atributos de la Relación (si tenía) deben colocarse en la misma relación en la que se ubicó la clave.
+
+4) Relaciones 1:N
+
+Se debe llevar la clave primaria de la relación correspondiente a la entidad el lado 1 de la Relación a la del lado N como clave externa. Los atributos de la Relación (si tenía) deben colocarse en la misma relación en la que se ubicó la clave.
+
+5) Relaciones N:M
+
+Se crea una nueva relación que tendrá las claves primarias de las Entidades participantes, que serán la clave primaria y a la vez claves externas. Se incluyen los atributos de la Relación (si tenía).
+
+6) Atributos multivaluados
+
+Cuando el Atributo multivaluado de una Entidad representa una selección múltiple de un catálogo se crea una nueva relación para el atributo, incluyendo la clave primaria de la Entidad a la que pertenece como clave externa y todos los componentes del atributo. La clave primaria de la relación serán todos los atributos.
+
+7) Relaciones n-arias
+
+Se crea una nueva relación que tendrá las claves primarias de todas las Entidades participantes, que serán la clave primaria y a la vez claves externas. Se incluyen los atributos de la Relación (si tenía).
+
+Solo en caso de que haya alguna Entidad participante con cardinalidad 1 (visto desde el punto de vista de la relación) podría no incluirse en la clave primaria para aprovechar que la restricción de clave impida la existencia de varias tuplas con valores repetidos para un mismo objeto de la Entidad participante 1.
+
+8) Especializaciones y categorías
+
+Especialización:
+
+8A: Una relación para la superclase y una por cada subclase. Se migra la clave de la superclase como clave externa a las relaciones de las subclases. Es la más utilizada y obligatoria si tanto la superclase como las subclases tienen relaciones propias.
+
+8B: Una relación por cada subclase que tenga todos los atributos/relaciones propios y los atributos de la superclase. Se debe usar solo con especializaciones totales y disjuntas en las que la superclase NO tenga relaciones propias.
+
+8C: Una sola relación con todo + un atributo que define el tipo de subclase. Se usa poco, solo si las subclases NO tienen relaciones propias.
+
+8D: Una sola relación con todo + n atributos booleanos que definen el tipo de subclase. Se usa muy poco, menos aún que 8C, y solo si las subclases NO tienen relaciones propias.
+
+Categoría: Una relación para la categoría en la que se crea un atributo como clave surrogada, el cual se migra a las superclases como clave externa.
+
+Volver a 1) si quedan objetos pendientes, en otro caso terminar.
