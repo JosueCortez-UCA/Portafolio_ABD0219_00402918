@@ -129,7 +129,7 @@ CREATE SCHEMA gestion;
 CREATE TYPE gestion.clase AS ENUM ('select','insert','delete','update');
 
 CREATE TYPE gestion.tipo_sentencia AS (
-    clase clase,
+    clase gestion.clase,
     cadena text
 );
 
