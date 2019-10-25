@@ -1,0 +1,13 @@
+Taller de elementos avanzados y programación embebida en el SGBD
+
+Se ha decidido dar un paso más en el desarrollo de la BD que comenzamos en el Taller Unidades 1 y 2.
+
+Deberás realizar algunos cambios en la estructura que creaste para aprovechar algunos elementos que hemos conocido en la unidad 3, así como la capacidad de control de la integridad semántica de la BD a través de triggers y funciones desarrolladas en PLPgSQL que hemos practicado en la Unidad 4.
+
+Sube acá el archivo comprimido que contenga:
+
+    1. Estructuras de herencia las especializaciones de Responsable y Docente.
+    2. La tabla dedicada a registrar los pagos (Talonario) se prevé que crezca enormemente. Realice el particionamiento de dicha tabla por rango (considere 3 particiones, una para cada año, 2020, 2021, 2022 y otra por default).
+    3. La cantidad de triggers que habrá que programar es enorme en esta BD, pero por el momento se necesitan:
+        a) Triggers que controlen la especialización disjunta y total de Sección.
+        b) Un trigger que impida la inserción de datos en la tabla Acceso si se comprueba que el alumno no está matriculado ese año, lo cual deberá comprobarse extrayendo el año de la fecha en la que el estudiante está entrando en el edificio y la existencia de una fila en la tabla de Matrícula (entre Alumno y Sección) para ese año.
