@@ -1,10 +1,10 @@
 \c template1
 
-drop database if exists taller34;
+drop database if exists taller2;
 
-create database taller34;
+create database taller2;
 
-\c taller34
+\c taller2
 
 drop table if exists alumno cascade;
 create table alumno(
@@ -104,8 +104,6 @@ create table seccionxasignatura(
     constraint fk_seccionxasignatura_seccion foreign key (denominacion_nivel_grado_seccion,numero_grado_seccion,letra_seccion)
     references seccion(denominacion_nivel_grado,numero_grado,letra) on delete cascade on update cascade
     );
-
--- Triggers de seccionxaula y seccionxasignatura    
     
 drop table if exists matricula cascade;
 create table matricula(
@@ -141,5 +139,3 @@ create table acceso(
     references alumno(NIE) on delete cascade on update cascade,
     constraint fk_acceso_edificio foreign key (denominacion_edificio)
     references edificio(denominacion) on delete cascade on update cascade);
-
--- Trigger de acceso 
