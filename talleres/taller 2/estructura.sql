@@ -39,11 +39,11 @@ create table talonario(
     estado      char(10) not null check (estado IN ('Pendiente','Cancelado','Anulado')),
     constraint pk_talonario primary key (NIE_alumno,tipo_pago,numero_pago,numero_año),
     constraint fk_talonario_alumno foreign key (NIE_alumno)
-    references alumno(NIE) on delete cascade on update cascade,
+    references alumno(NIE) on delete cascade on update cascade deferrable,
     constraint fk_talonario_pago foreign key (tipo_pago,numero_pago)
-    references pago(tipo,numero) on delete cascade on update cascade,
+    references pago(tipo,numero) on delete cascade on update cascade deferrable,
     constraint fk_talonario_año foreign key (numero_año)
-    references año(numero) on delete cascade on update cascade
+    references año(numero) on delete cascade on update cascade deferrable
 );
 
 drop table if exists docente cascade;
@@ -72,7 +72,7 @@ create table grado(
     numero  SMALLINT not null,
     constraint pk_grado primary key (denominacion_nivel,numero),
     constraint fk_grado_nivel foreign key (denominacion_nivel)
-    references nivel(denominacion) on delete cascade on update cascade
+    references nivel(denominacion) on delete cascade on update cascade deferrable
 );
 
 drop table if exists seccion cascade;
@@ -82,7 +82,7 @@ create table seccion(
     letra       char(1) not null,
     constraint pk_seccion primary key (denominacion_nivel_grado,numero_grado,letra),
     constraint fk_seccion_grado foreign key (denominacion_nivel_grado,numero_grado)
-    references grado(denominacion_nivel,numero) on delete cascade on update cascade
+    references grado(denominacion_nivel,numero) on delete cascade on update cascade deferrable
 );
 
 drop table if exists seccionxaula cascade;
@@ -92,7 +92,7 @@ create table seccionxaula(
     letra_seccion       char(1) not null,
     constraint pk_seccionxaula primary key (denominacion_nivel_grado_seccion,numero_grado_seccion,letra_seccion),
     constraint fk_seccionxaula_seccion foreign key (denominacion_nivel_grado_seccion,numero_grado_seccion,letra_seccion)
-    references seccion(denominacion_nivel_grado,numero_grado,letra) on delete cascade on update cascade
+    references seccion(denominacion_nivel_grado,numero_grado,letra) on delete cascade on update cascade deferrable
 );
 
 drop table if exists seccionxasignatura cascade;
@@ -102,7 +102,7 @@ create table seccionxasignatura(
     letra_seccion       char(1) not null,
     constraint pk_seccionxasignatura primary key (denominacion_nivel_grado_seccion,numero_grado_seccion,letra_seccion),
     constraint fk_seccionxasignatura_seccion foreign key (denominacion_nivel_grado_seccion,numero_grado_seccion,letra_seccion)
-    references seccion(denominacion_nivel_grado,numero_grado,letra) on delete cascade on update cascade
+    references seccion(denominacion_nivel_grado,numero_grado,letra) on delete cascade on update cascade deferrable
 );
 
 drop table if exists matricula cascade;
@@ -114,11 +114,11 @@ create table matricula(
     numero_año smallint not null,
     constraint pk_matricula primary key (NIE_alumno,denominacion_nivel_grado_seccion,numero_grado_seccion,letra_seccion,numero_año),
     constraint fk_matricula_alumno foreign key (NIE_alumno)
-    references alumno(NIE) on delete cascade on update cascade,
+    references alumno(NIE) on delete cascade on update cascade deferrable,
     constraint fk_matricula_seccion foreign key (denominacion_nivel_grado_seccion,numero_grado_seccion,letra_seccion)
-    references seccion(denominacion_nivel_grado,numero_grado,letra) on delete cascade on update cascade,
+    references seccion(denominacion_nivel_grado,numero_grado,letra) on delete cascade on update cascade deferrable,
     constraint fk_matricula_año foreign key (numero_año)
-    references año(numero) on delete cascade on update cascade
+    references año(numero) on delete cascade on update cascade deferrable
 );
 
 drop table if exists edificio cascade;
@@ -137,7 +137,7 @@ create table acceso(
     hora_salida time,
     constraint pk_acceso primary key (NIE_alumno,denominacion_edificio,fecha),
     constraint fk_acceso_alumno foreign key (NIE_alumno)
-    references alumno(NIE) on delete cascade on update cascade,
+    references alumno(NIE) on delete cascade on update cascade deferrable,
     constraint fk_acceso_edificio foreign key (denominacion_edificio)
-    references edificio(denominacion) on delete cascade on update cascade
+    references edificio(denominacion) on delete cascade on update cascade deferrable
 );
