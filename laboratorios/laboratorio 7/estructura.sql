@@ -9,7 +9,7 @@ create database ucasoft;
 
 --TABLA proyecto
 CREATE TABLE proyecto(
-	codigo char(5) not null constraint pk_proyecto primary key,
+	codigo char(10) not null constraint pk_proyecto primary key,
 	denominacion varchar(100) not null,
 	tipo varchar(30) not null check(tipo in ('Web', 'Venta_almacen', 'ERP')),
 	desc_txt text,
@@ -53,7 +53,7 @@ ALTER TABLE miembro
 
 --TABLA version
 CREATE TABLE version(
-	codigo_proyecto char(5) not null,
+	codigo_proyecto char(10) not null,
 	numero numeric(4,2) not null,
 	descripcion text,
 	constraint pk_version primary key(codigo_proyecto, numero),
@@ -81,8 +81,8 @@ CREATE TABLE asiste(
 
 --TABLA proyecto_parte
 CREATE TABLE proyecto_parte(
-	codigo_macroproyecto char(5) not null,
-	codigo_subproyecto char(5) not null,
+	codigo_macroproyecto char(10) not null,
+	codigo_subproyecto char(10) not null,
 	constraint pk_proyecto_parte primary key(codigo_macroproyecto, codigo_subproyecto),
 	constraint fk_macroproyecto foreign key(codigo_macroproyecto) references proyecto(codigo)
 	ON delete cascade ON update cascade,
@@ -106,7 +106,7 @@ CREATE TABLE presenta(
 
 --TABLA web
 CREATE TABLE web(
-	codigo_proyecto char(5) not null constraint pk_web primary key,
+	codigo_proyecto char(10) not null constraint pk_web primary key,
 	url varchar(100) not null,
 	num_tablas integer,
 	num_pantallas integer,
@@ -116,7 +116,7 @@ CREATE TABLE web(
 
 --TABLA venta_almacen
 CREATE TABLE venta_almacen(
-	codigo_proyecto char(5) not null constraint pk_venta_almacen primary key,
+	codigo_proyecto char(10) not null constraint pk_venta_almacen primary key,
 	num_clientes integer not null,
 	constraint fk_venta_almacen_proyecto foreign key(codigo_proyecto) references proyecto(codigo)
 	ON delete cascade ON update cascade
@@ -124,7 +124,7 @@ CREATE TABLE venta_almacen(
 
 --TABLA erp
 CREATE TABLE erp(
-	codigo_proyecto char(5) not null constraint pk_erp primary key,
+	codigo_proyecto char(10) not null constraint pk_erp primary key,
 	constraint fk_erp_proyecto foreign key(codigo_proyecto) references proyecto(codigo)
 	ON delete cascade ON update cascade
 );
@@ -152,7 +152,7 @@ CREATE TABLE ventas(
 
 --TABLA desarrolla
 CREATE TABLE desarrolla(
-	codigo_proyecto char(5) not null,
+	codigo_proyecto char(10) not null,
 	dui_miembro_ingenieria char(10) not null,
 	labor varchar(30),
 	constraint pk_desarrolla primary key(codigo_proyecto, dui_miembro_ingenieria),
@@ -164,7 +164,7 @@ CREATE TABLE desarrolla(
 
 --TABLA modulo erp
 CREATE TABLE modulo_erp(
-	codigo_proyecto char(5) not null,
+	codigo_proyecto char(10) not null,
 	numero integer,
 	descripcion varchar(30),
 	constraint pk_modulo_erp primary key(codigo_proyecto, numero, descripcion),
@@ -174,7 +174,7 @@ CREATE TABLE modulo_erp(
 
 --TABLA contrata
 CREATE TABLE contrata(
-	codigo_proyecto char(5) not null,
+	codigo_proyecto char(10) not null,
 	dui_cliente char(10) not null,
 	dui_miembro_gestion char(10) not null,
 	descuento money not null default 0,
@@ -193,7 +193,7 @@ CREATE TABLE contrata(
 
 --TABLA atiende
 CREATE TABLE atiende(
-	codigo_proyecto char(5) not null,
+	codigo_proyecto char(10) not null,
 	dui_cliente char(10) not null,
 	dui_miembro_ventas char(10),
 	constraint pk_atiende primary key(codigo_proyecto, dui_cliente, dui_miembro_ventas),
