@@ -5,9 +5,9 @@
 DROP TABLE IF EXISTS cliente CASCADE;
 CREATE TABLE cliente(
 	dui char(10) not null,
+	pais char(2),
 	denominacion varchar(100) not null,
-	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica')),
-	pais char(2)
+	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica'))
 )PARTITION BY LIST(pais);
 
 CREATE TABLE clientes_def PARTITION OF cliente DEFAULT;
@@ -17,13 +17,13 @@ DROP TABLE IF EXISTS contrata CASCADE;
 CREATE TABLE contrata(
 	codigo_proyecto char(10) not null,
 	dui_cliente char(10) not null,
+	pais char(2),
 	dui_miembro_gestion char(10) not null,
 	descuento money not null default 0,
 	implantacion_fecha_inicio date not null,
 	implantacion_precio money not null default 0,
 	mantenimiento_periodicidad varchar(30) not null,
-	mantenimiento_precio money not null default 0,
-    pais char(2)
+	mantenimiento_precio money not null default 0
 )PARTITION BY LIST(pais);
 
 CREATE TABLE contrata_def PARTITION OF contrata DEFAULT;
@@ -33,8 +33,8 @@ DROP TABLE IF EXISTS atiende CASCADE;
 CREATE TABLE atiende(
 	codigo_proyecto char(10) not null,
 	dui_cliente char(10) not null,
+	pais char(2),
 	dui_miembro_ventas char(10),
-    pais char(2),
 	constraint pk_atiende primary key(codigo_proyecto, dui_cliente, dui_miembro_ventas),
 	constraint fk_atiende_proyecto foreign key(codigo_proyecto) references proyecto(codigo)
 	ON delete cascade ON update cascade,
@@ -58,22 +58,22 @@ CREATE DATABASE ucasoft_bz;
 --TABLA cliente
 CREATE TABLE cliente_sv(
 	dui char(10) not null constraint pk_cliente primary key,
+	pais char(2) not null check (tipo in ('sv')),
 	denominacion varchar(100) not null,
-	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica')),
-	pais char(2) not null check (tipo in ('sv'))
+	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica'))
 );
 
 --TABLA contrata
 CREATE TABLE contrata_sv(
 	codigo_proyecto char(5) not null,
 	dui_cliente char(10) not null,
+	pais char(2),
 	dui_miembro_gestion char(10) not null,
 	descuento money not null default 0,
 	implantacion_fecha_inicio date not null,
 	implantacion_precio money not null default 0,
 	mantenimiento_periodicidad varchar(30) not null,
 	mantenimiento_precio money not null default 0,
-	pais char(2),
 	constraint pk_contrata primary key(codigo_proyecto, dui_cliente),
 	constraint fk_contrata_cliente foreign key(dui_cliente) references cliente_sv(dui)
 	ON delete cascade ON update cascade
@@ -83,22 +83,22 @@ CREATE TABLE contrata_sv(
 --TABLA cliente
 CREATE TABLE cliente_cr(
 	dui char(10) not null constraint pk_cliente primary key,
+	pais char(2) not null check (tipo in ('cr')),
 	denominacion varchar(100) not null,
-	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica')),
-	pais char(2) not null check (tipo in ('cr'))
+	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica'))
 );
 
 --TABLA contrata
 CREATE TABLE contrata_cr(
 	codigo_proyecto char(5) not null,
 	dui_cliente char(10) not null,
+	pais char(2),
 	dui_miembro_gestion char(10) not null,
 	descuento money not null default 0,
 	implantacion_fecha_inicio date not null,
 	implantacion_precio money not null default 0,
 	mantenimiento_periodicidad varchar(30) not null,
 	mantenimiento_precio money not null default 0,
-	pais char(2),
 	constraint pk_contrata primary key(codigo_proyecto, dui_cliente),
 	constraint fk_contrata_cliente foreign key(dui_cliente) references cliente_cr(dui)
 	ON delete cascade ON update cascade
@@ -108,22 +108,22 @@ CREATE TABLE contrata_cr(
 --TABLA cliente
 CREATE TABLE cliente_bz(
 	dui char(10) not null constraint pk_cliente primary key,
+	pais char(2) not null check (tipo in ('bz')),
 	denominacion varchar(100) not null,
-	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica')),
-	pais char(2) not null check (tipo in ('bz'))
+	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica'))
 );
 
 --TABLA contrata
 CREATE TABLE contrata_bz(
 	codigo_proyecto char(5) not null,
 	dui_cliente char(10) not null,
+	pais char(2),
 	dui_miembro_gestion char(10) not null,
 	descuento money not null default 0,
 	implantacion_fecha_inicio date not null,
 	implantacion_precio money not null default 0,
 	mantenimiento_periodicidad varchar(30) not null,
 	mantenimiento_precio money not null default 0,
-	pais char(2),
 	constraint pk_contrata primary key(codigo_proyecto, dui_cliente),
 	constraint fk_contrata_cliente foreign key(dui_cliente) references cliente_bz(dui)
 	ON delete cascade ON update cascade
