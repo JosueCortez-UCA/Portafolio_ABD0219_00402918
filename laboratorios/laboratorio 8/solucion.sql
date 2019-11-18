@@ -70,3 +70,24 @@ local replication all md5
 
 service postgresql restart          -- opcion 1
 /etc/init.d/postgresql restart      -- opcion 2
+
+/*
+    6
+*/
+su postgres
+psql -p 5432
+
+CREATE USER admin WITH PASSWORD 'lerolero' CREATEDB SUPERUSER REPLICATION;
+
+\c – admin
+\i estructura-ucasoft.sql
+
+create extension pglogical;
+
+SELECT pglogical.create_node(
+node_name := 'proveedor',
+dsn := 'host=localhost port=5432 dbname=ucasoft user=admin password=lerolero'
+);
+
+SELECT pglogical.replication_set_add_all_tables
+('default', ARRAY['public']);
