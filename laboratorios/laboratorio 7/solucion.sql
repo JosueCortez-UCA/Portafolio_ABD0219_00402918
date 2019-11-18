@@ -1,4 +1,9 @@
 /*
+	NOTA: no tengo instalada la version 11 de postgres y no pude probar ciertas funciones,
+	por lo tanto no se si todo funcione correctamente, por su atencion gracias.
+*/
+
+/*
     1
 */
 --TABLA cliente
