@@ -35,3 +35,8 @@ pg_createcluster 11 standby
     3
 */
 pg_ctlcluster 11 standby start
+
+/*
+    4
+*/
+apt-get install postgresql-11-pglogical
