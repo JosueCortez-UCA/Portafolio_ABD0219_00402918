@@ -175,3 +175,8 @@ CREATE USER MAPPING FOR admin SERVER remoto_bz OPTIONS (user 'postgres_fdw', pas
 CREATE FOREIGN TABLE cliente_sv PARTITION OF cliente FOR VALUES IN ('sv') SERVER remoto_sv;
 CREATE FOREIGN TABLE cliente_cr PARTITION OF cliente FOR VALUES IN ('cr') SERVER remoto_cr;
 CREATE FOREIGN TABLE cliente_bz PARTITION OF cliente FOR VALUES IN ('bz') SERVER remoto_bz;
+
+/*
+	7
+*/
+psql < datos.sql
