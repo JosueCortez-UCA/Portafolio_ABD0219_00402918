@@ -150,3 +150,9 @@ ON ddl_command_end
 WHEN TAG IN ('CREATE TABLE', 'CREATE TABLE AS')
 EXECUTE PROCEDURE pglogical_assign_repset()
 ;
+
+/*
+    11
+*/
+-- en terminal para main
+\i reproductor-ucasoft.sql
