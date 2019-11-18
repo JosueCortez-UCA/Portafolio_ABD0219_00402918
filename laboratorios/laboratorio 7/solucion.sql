@@ -2,7 +2,7 @@
     1
 */
 --TABLA cliente
-DROP TABLE cliente CASCADE;
+DROP TABLE IF EXISTS cliente CASCADE;
 CREATE TABLE cliente(
 	dui char(10) not null,
 	denominacion varchar(100) not null,
@@ -13,9 +13,9 @@ CREATE TABLE cliente(
 CREATE TABLE clientes_def PARTITION OF cliente DEFAULT;
 
 --TABLA contrata
-DROP TABLE contrata CASCADE;
+DROP TABLE IF EXISTS contrata CASCADE;
 CREATE TABLE contrata(
-	codigo_proyecto char(5) not null,
+	codigo_proyecto char(10) not null,
 	dui_cliente char(10) not null,
 	dui_miembro_gestion char(10) not null,
 	descuento money not null default 0,
@@ -29,9 +29,9 @@ CREATE TABLE contrata(
 CREATE TABLE contrata_def PARTITION OF contrata DEFAULT;
 
 --TABLA atiende
-DROP TABLE atiende CASCADE;
+DROP TABLE IF EXISTS atiende CASCADE;
 CREATE TABLE atiende(
-	codigo_proyecto char(5) not null,
+	codigo_proyecto char(10) not null,
 	dui_cliente char(10) not null,
 	dui_miembro_ventas char(10),
     pais char(2),
