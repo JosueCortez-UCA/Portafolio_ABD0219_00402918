@@ -10,7 +10,7 @@ CREATE TABLE cliente(
 	pais char(2)
 )PARTITION BY LIST(pais);
 
-CREATE TABLE clientes_def PARTITION OF clientes DEFAULT;
+CREATE TABLE clientes_def PARTITION OF cliente DEFAULT;
 
 --TABLA contrata
 DROP TABLE contrata CASCADE;
