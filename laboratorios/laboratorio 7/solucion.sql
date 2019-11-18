@@ -135,13 +135,34 @@ CREATE TABLE contrata_bz(
 CREATE USER fdw_ucasoft WITH PASSWORD 'pass';
 
 \c ucasoft_sv
-GRANT SELECT, INSERT, UPDATE, DELETE ON cliente_sv TO fdw_ucasoft;
-GRANT SELECT, INSERT, UPDATE, DELETE ON contrata_sv TO fdw_ucasoft;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cliente_sv TO fdw_ucasoft;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contrata_sv TO fdw_ucasoft;
 
 \c ucasoft_cr
-GRANT SELECT, INSERT, UPDATE, DELETE ON cliente_cr TO fdw_ucasoft;
-GRANT SELECT, INSERT, UPDATE, DELETE ON contrata_cr TO fdw_ucasoft;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cliente_cr TO fdw_ucasoft;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contrata_cr TO fdw_ucasoft;
 
 \c ucasoft_bz
-GRANT SELECT, INSERT, UPDATE, DELETE ON cliente_bz TO fdw_ucasoft;
-GRANT SELECT, INSERT, UPDATE, DELETE ON contrata_bz TO fdw_ucasoft;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE cliente_bz TO fdw_ucasoft;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE contrata_bz TO fdw_ucasoft;
+
+/*
+	5
+*/
+\c ucasoft
+
+CREATE EXTENSION postgres_fdw;
+
+GRANT USAGE ON FOREIGN DATA WRAPPER postgres_fdw TO admin;
+
+CREATE SERVER remoto_sv FOREIGN DATA WRAPPER postgres_fdw OPTIONS (dbname 'ucasoft_sv', host 'localhost', port '5432');
+CREATE SERVER remoto_cr FOREIGN DATA WRAPPER postgres_fdw OPTIONS (dbname 'ucasoft_cr', host 'localhost', port '5432');
+CREATE SERVER remoto_bz FOREIGN DATA WRAPPER postgres_fdw OPTIONS (dbname 'ucasoft_bz', host 'localhost', port '5432');
+
+GRANT USAGE ON FOREIGN SERVER remoto_sv TO admin;
+GRANT USAGE ON FOREIGN SERVER remoto_cr TO admin;
+GRANT USAGE ON FOREIGN SERVER remoto_bz TO admin;
+
+CREATE USER MAPPING FOR admin SERVER remoto_sv OPTIONS (user 'postgres_fdw', password 'pass');
+CREATE USER MAPPING FOR admin SERVER remoto_cr OPTIONS (user 'postgres_fdw', password 'pass');
+CREATE USER MAPPING FOR admin SERVER remoto_bz OPTIONS (user 'postgres_fdw', password 'pass');
