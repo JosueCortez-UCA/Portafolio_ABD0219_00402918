@@ -60,7 +60,7 @@ CREATE TABLE cliente_sv(
 	dui char(10) not null constraint pk_cliente primary key,
 	denominacion varchar(100) not null,
 	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica')),
-	pais char(2)
+	pais char(2) not null check (tipo in ('sv'))
 );
 
 --TABLA contrata
@@ -85,7 +85,7 @@ CREATE TABLE cliente_cr(
 	dui char(10) not null constraint pk_cliente primary key,
 	denominacion varchar(100) not null,
 	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica')),
-	pais char(2)
+	pais char(2) not null check (tipo in ('cr'))
 );
 
 --TABLA contrata
@@ -110,7 +110,7 @@ CREATE TABLE cliente_bz(
 	dui char(10) not null constraint pk_cliente primary key,
 	denominacion varchar(100) not null,
 	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica')),
-	pais char(2)
+	pais char(2) not null check (tipo in ('bz'))
 );
 
 --TABLA contrata
