@@ -127,3 +127,26 @@ provider_dsn := 'host=localhost port=5432 dbname=ucasoft user=admin password=ler
 */
 -- en terminal para standby
 select * from contrata;
+
+/*
+    10
+*/
+-- en terminal para main
+CREATE OR REPLACE FUNCTION pglogical_assign_repset()
+RETURNS event_trigger AS $$
+DECLARE obj record;
+BEGIN
+    FOR obj IN SELECT * FROM pg_event_trigger_ddl_commands()
+    LOOP
+        IF obj.object_type = 'table' THEN
+        PERFORM pglogical.replication_set_add_table('default', obj.objid);
+        END IF;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE EVENT TRIGGER pglogical_assign_repset_trg
+ON ddl_command_end
+WHEN TAG IN ('CREATE TABLE', 'CREATE TABLE AS')
+EXECUTE PROCEDURE pglogical_assign_repset()
+;
