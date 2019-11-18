@@ -14,7 +14,6 @@ CREATE TABLE cliente(
 	dui char(10) not null constraint pk_cliente primary key,
 	denominacion varchar(100) not null,
 	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica'))
-	pais char(2),
 );
 
 --TABLA departamento
