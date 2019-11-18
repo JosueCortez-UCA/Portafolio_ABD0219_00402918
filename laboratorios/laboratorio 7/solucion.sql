@@ -42,8 +42,7 @@ CREATE TABLE atiende(
 	dui_miembro_ventas char(10),
 	constraint pk_atiende primary key(codigo_proyecto, dui_cliente, dui_miembro_ventas),
 	constraint fk_atiende_proyecto foreign key(codigo_proyecto) references proyecto(codigo)
-	ON delete cascade ON update cascade,
-	constraint fk_atiende_miembro_ventas foreign key(dui_miembro_ventas) references ventas(dui_miembro)
+	ON delete cascade ON update cascade,constraint fk_atiende_miembro_ventas foreign key(dui_miembro_ventas) references ventas(dui_miembro)
 	ON delete cascade ON update cascade
 );
 
@@ -63,7 +62,7 @@ CREATE DATABASE ucasoft_bz;
 --TABLA cliente
 CREATE TABLE cliente_sv(
 	dui char(10) not null constraint pk_cliente primary key,
-	pais char(2) not null check (tipo in ('sv')),
+	pais char(2) not null check (pais in ('sv')),
 	denominacion varchar(100) not null,
 	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica'))
 );
@@ -88,7 +87,7 @@ CREATE TABLE contrata_sv(
 --TABLA cliente
 CREATE TABLE cliente_cr(
 	dui char(10) not null constraint pk_cliente primary key,
-	pais char(2) not null check (tipo in ('cr')),
+	pais char(2) not null check (pais in ('cr')),
 	denominacion varchar(100) not null,
 	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica'))
 );
@@ -113,7 +112,7 @@ CREATE TABLE contrata_cr(
 --TABLA cliente
 CREATE TABLE cliente_bz(
 	dui char(10) not null constraint pk_cliente primary key,
-	pais char(2) not null check (tipo in ('bz')),
+	pais char(2) not null check (pais in ('bz')),
 	denominacion varchar(100) not null,
 	tipo varchar(40) not null check (tipo in ('Persona física','Empresa','ONG','Institución pública','Institución académica'))
 );
@@ -168,9 +167,9 @@ GRANT USAGE ON FOREIGN SERVER remoto_sv TO admin;
 GRANT USAGE ON FOREIGN SERVER remoto_cr TO admin;
 GRANT USAGE ON FOREIGN SERVER remoto_bz TO admin;
 
-CREATE USER MAPPING FOR admin SERVER remoto_sv OPTIONS (user 'postgres_fdw', password 'pass');
-CREATE USER MAPPING FOR admin SERVER remoto_cr OPTIONS (user 'postgres_fdw', password 'pass');
-CREATE USER MAPPING FOR admin SERVER remoto_bz OPTIONS (user 'postgres_fdw', password 'pass');
+CREATE USER MAPPING FOR admin SERVER remoto_sv OPTIONS (user 'fdw_ucasoft', password 'pass');
+CREATE USER MAPPING FOR admin SERVER remoto_cr OPTIONS (user 'fdw_ucasoft', password 'pass');
+CREATE USER MAPPING FOR admin SERVER remoto_bz OPTIONS (user 'fdw_ucasoft', password 'pass');
 
 /*
 	6

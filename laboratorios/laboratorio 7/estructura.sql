@@ -92,7 +92,7 @@ CREATE TABLE proyecto_parte(
 
 --TABLA presenta
 CREATE TABLE presenta(
-	codigo_proyecto char(5) not null,
+	codigo_proyecto char(10) not null,
 	nombre_superpachanga varchar(50) not null,
 	dui_miembro char(10) not null,
 	constraint pk_presenta primary key(codigo_proyecto, nombre_superpachanga),
