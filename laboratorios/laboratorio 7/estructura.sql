@@ -1,3 +1,12 @@
+-- BD
+\c template1
+
+drop database if exists ucasoft;
+
+create database ucasoft;
+
+\c ucasoft
+
 --TABLA proyecto
 CREATE TABLE proyecto(
 	codigo char(5) not null constraint pk_proyecto primary key,
