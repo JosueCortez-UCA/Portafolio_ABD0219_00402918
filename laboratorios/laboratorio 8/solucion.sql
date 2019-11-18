@@ -40,3 +40,24 @@ pg_ctlcluster 11 standby start
     4
 */
 apt-get install postgresql-11-pglogical
+
+/*
+    5
+*/
+nano /etc/postgresql/11/main/postgresql.conf
+wal_level = 'logical'
+max_worker_processes = 10
+max_replication_slots = 10
+max_wal_senders = 10
+shared_preload_libraries = 'pglogical'
+track_commit_timestamp = on
+
+nano /etc/postgresql/11/standby/postgresql.conf
+wal_level = 'logical'
+max_worker_processes = 10
+max_replication_slots = 10
+max_wal_senders = 10
+shared_preload_libraries = 'pglogical'
+track_commit_timestamp = on
+
+/etc/init.d/postgresql restart
