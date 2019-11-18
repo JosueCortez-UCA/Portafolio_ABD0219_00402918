@@ -128,3 +128,20 @@ CREATE TABLE contrata_bz(
 	constraint fk_contrata_cliente foreign key(dui_cliente) references cliente_bz(dui)
 	ON delete cascade ON update cascade
 );
+
+/*
+	4
+*/
+CREATE USER fdw_ucasoft WITH PASSWORD 'pass';
+
+\c ucasoft_sv
+GRANT SELECT, INSERT, UPDATE, DELETE ON cliente_sv TO fdw_ucasoft;
+GRANT SELECT, INSERT, UPDATE, DELETE ON contrata_sv TO fdw_ucasoft;
+
+\c ucasoft_cr
+GRANT SELECT, INSERT, UPDATE, DELETE ON cliente_cr TO fdw_ucasoft;
+GRANT SELECT, INSERT, UPDATE, DELETE ON contrata_cr TO fdw_ucasoft;
+
+\c ucasoft_bz
+GRANT SELECT, INSERT, UPDATE, DELETE ON cliente_bz TO fdw_ucasoft;
+GRANT SELECT, INSERT, UPDATE, DELETE ON contrata_bz TO fdw_ucasoft;
