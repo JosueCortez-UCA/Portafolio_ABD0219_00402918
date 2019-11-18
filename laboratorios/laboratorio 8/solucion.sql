@@ -25,3 +25,8 @@ su postgres
 psql
 
 CREATE USER uca WITH PASSWORD 'wii';
+
+/*
+    2
+*/
+pg_createcluster 11 standby
