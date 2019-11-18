@@ -41,3 +41,12 @@ CREATE TABLE atiende(
 	constraint fk_atiende_miembro_ventas foreign key(dui_miembro_ventas) references ventas(dui_miembro)
 	ON delete cascade ON update cascade
 );
+
+/*
+    2
+*/
+CREATE DATABASE ucasoft_sv;
+
+CREATE DATABASE ucasoft_cr;
+
+CREATE DATABASE ucasoft_bz;
