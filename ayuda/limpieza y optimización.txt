@@ -1,0 +1,71 @@
+
+vacuum / autovacuum / reindex
+-----------------------------
+
+parámetros en postgresql.conf (sección AUTOVACUUM)
+
+ps aux|grep autovacuum
+
+select name, setting from pg_settings where name = 'autovacuum' ;
+
+El vacuum se ejecuta sobre el esquema actual (o una tabla en particular)
+
+-- Marcar espacio ocupado por filas borradas/actualizadas para su reutilización
+VACUUM
+
+-- Compactar espacio disponible (bloquea la tabla mientras se efectúa)
+VACUUM FULL
+
+-- Realiza el VACUUM y además actualiza las estadísticas de acceso para optimizar la planificación de consultas
+VACUUM ANALYZE 
+
+-- También se puede ejecutar ANALYZE por separado del VACUUM
+
+-- Se pueden combinar ambas formas, y agregar con VERBOSE la salida en detalle. La sintaxis actual lleva ():
+
+VACUUM (FULL,ANALYZE,VERBOSE)
+
+https://www.postgresql.org/docs/11/routine-vacuuming.html
+
+Si queremos hacer una limpieza completa de todo el SGBD, se usa un comando (ejecutado por el usuario postgres). Por supuesto admite todas las opciones de VACUUM utilizando parámetros:
+
+vacuumdb --all
+
+-- Otra labor de optimización consiste en efectuar la actualización de los índices definidos sobre las tablas con REINDEX
+
+REINDEX (sobre un índice, una tabla, un esquema o una BD)
+
+https://www.postgresql.org/docs/11/routine-reindex.html
+
+Tuning
+------
+
+- tocar los parámetros de postgresql.conf shared_buffers, work_mem (valor empírico) y effective_cache_size. 
+- Hacer un vacuum full, puede que recomiende aumentar el valor de max_fsm_pages por encima de una cifra determinada
+
+Para un ejemplo de 4 Gb:
+        
+-> postgresql.conf
+shared_buffers=1024Mb (1/4 RAM)
+work_mem=64 Mb 
+effective_cache_size=2048Mb (1/2 RAM)
+
+También podemos usar algunas ayudas para afinar más!
+
+https://pgtune.leopard.in.ua/
+ 
+En la actualidad esto ya no suele ser necesario, pero eventualmente puede haber limitaciones en el S.O., requiriendo ajustar adecuadamente algunos parámetros. 
+
+Por ejemplo, anteriormente (versión < 9.3) era indispensable ajustar shmmax (tamaño máximo de segmento contiguo de memoria), para ello hay que editar /etc/sysctl.conf y añadir kernel.shmmax=valor, en caliente puede cambiarse con sysctl -w kernel.shmmax=valor, ojo, valor en bytes).
+
+==>> Cuidado, si el valor que tiene shmmax es enorme (no coincide con la cantidad de memoria RAM que tiene el equipo, sino que el valor es básicamente el mayor posible) entonces no hay que tocarlo.
+
+Para el ejemplo de 4 Gb.
+-> sysctl.conf
+kernel.shmmax=1431655764 (1/3 RAM)
+  
+  
+Más información sobre tuning:
+https://www.percona.com/blog/2018/08/29/tune-linux-kernel-parameters-for-postgresql-optimization/
+https://www.percona.com/blog/2018/08/31/tuning-postgresql-database-parameters-to-optimize-performance/
+https://severalnines.com/database-blog/architecture-and-tuning-memory-postgresql-databases

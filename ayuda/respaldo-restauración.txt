@@ -1,0 +1,218 @@
+Tareas programadas
+==================
+
+Agente de tareas programadas en *nix: cron
+
+archivos y directorios de cron:
+/etc/crontab
+/etc/cron.d
+/etc/cron.hourly / daily / monthly
+
+El comando crontab -e para editar crontabs de usuario (diferentes de /etc/crontab), que son almacenados en el siguiente directorio:
+
+/var/spool/cron/crontabs
+
+cron / crontab / anacron
+
+Ejemplo de línea en /etc/crontab (ejecución cada 5 minutos)
+
+*/5 *   * * *   postgres script.sh 
+
+Un ejemplo de script que ejecuta sentencias en la BD puede ser el siguiente. El script deberá tener permisos de ejecución:
+
+--- 8< ---
+
+#!/bin/sh
+
+BD=ucasoft
+TABLA=test
+ARCHIVO=/home/kadejo/test.dat
+
+psql ${BD} <<FIN
+  insert into ${TABLA} values (now(),'kadejo');
+  copy ${TABLA} TO '${ARCHIVO}';
+FIN
+
+--- >8 ---
+
+Ojo, si se ejecuta con un usuario/contraseña (indicando -U usuario en el comando psql) debe establecerse en un archivo denominado .pgpass (oculto) en el directorio home del usuario y con permisos "especiales" chmod 0600 ~/.pgpass
+
+localhost:5432:ucasoft:uca:uca
+
+¿Dónde se ve qué tareas se están ejecutando? 
+
+/var/log/syslog
+
+La ejecución de los comandos agendados puede ser guardada en un archivo si al final de la línea en el crontab se agrega un desvío de la salida estándar a un archivo
+
+>> /var/log/myjob.log 2>&1
+
+con el ejemplo anterior
+
+*/5 *   * * *   postgres script.sh >> /var/log/myjob.log 2>&1
+
+o si hacemos uso del sistema de bitácoras que ya existe, el siguiente apéndice guardará la salida en /var/log/messages y /var/log/syslog
+
+*/5 *   * * *   postgres script.sh 2>&1 | /usr/bin/logger -t etiqueta
+
+Importación y exportación de información
+========================================
+
+-- Lado servidor 
+
+Si se quiere poder escribir archivos con un usuario no superuser, hay que darle permiso GRANT pg_write_server_files, para leer es similar, pg_read_server_files.
+
+https://www.postgresql.org/docs/11/sql-copy.html
+
+COPY (consulta) TO <file-path>; -- ojo la ruta no puede ser relativa, debe ser absoluta
+
+COPY (SELECT * FROM miembro WHERE denominacion_departamento = 'Ventas') TO '/home/kadejo/ventas.csv';
+
+COPY (SELECT * FROM miembro WHERE denominacion_departamento = 'Ventas') TO '/home/kadejo/ventas.csv' CSV DELIMITER ',' HEADER;
+
+COPY miembro TO '/home/kadejo/miembro.csv' CSV DELIMITER ',' HEADER;
+
+COPY miembro2 FROM '/home/kadejo/miembro.csv' CSV DELIMITER ',' HEADER;
+
+-- Lado cliente (psql)
+\copy hace lo mismo que COPY, *PERO* el flujo de datos en lugar de al servidor va hacia el cliente (permisos y ubicación de quien ejecutó psql) y no requiere permisos especiales
+
+Respaldo y restauración
+=======================
+
+Obviamente no se puede hacer un respaldo con puros COPY, se utilizan comandos dedicados a tal fin. En el caso de PostgreSQL se utiliza pg_dump.
+
+El comando tiene diferentes parámetros para obtener un respaldo de la base de datos adecuado al propósito que se desee. Generalmente lo lanza un script programado, por lo que deberemos utilizar .pgpass para que no solicite interactivamente contraseña.
+
+Ejemplo:
+
+pg_dump -U uca ucasoft > ucasoft.bkp
+
+Parámetros más importantes:
+--> -f archivo (si no redirigimos la salida con >)
+--> -F c / -F d (formato custom o directorio, necesarios para hacer pg_restore y hacer selección de lo que se desea restaurar y/o en qué orden), si no se indica sale texto plano
+--> -a --data-only (solo datos)
+--> -c --clean (agrega sentencias de eliminación antes de crear)
+--> -s --schema-only (solo estructura)
+--> -t tabla/s según patrón
+--> -T excluyendo tablas según patrón
+
+pg_dump -U uca -F d ucasoft -f dirbackup
+
+La restauración se puede hacer manualmente si se copió la información a texto plano (sin parámetro -F o con -F p), pero lo es lo habitual, sino que se utiliza pg_restore. Los parámetros son similares a pg_dump, pero:
+
+--> -C (ejecuta el create database de la BD indicado en el backup, con --clean hace además un drop database previo)
+--> -d template1 (se conecta a la BD indicada para ejecutar drop/create database y luego se conecta a dicha BD)
+
+pg_restore -U uca -F d --clean --create -d template1 dirbackup 
+
+Respaldo y restauración de punto en tiempo (Point-in-time Recovery)
+===================================================================
+
+Lo más básico: 
+
+Deben establecerse en el postgresql.conf
+
+archive_mode = on
+archive_command = 'test ! -f /var/backups/postgresql/%f && cp %p /var/backups/postgresql/%f'
+
+# Usar solo si necesito forzar la creación de un backup incremental cada XXX segundos
+archive_timeout = 300
+
+Lo importante es decidir donde van a enviarse los ficheros de respaldo (ojalá un servidor o dispositivo de almacenamiento remoto). Ojo a que el directorio donde van a almacenarse los archivos (p.e. /var/backups/postgresql) debe pertenecerle a postgres (o este usuario tener permiso de escritura). Si no, no podrá trasladar los ficheros y los ficheros incrementales se quedan guardados en el pg_wal hasta que tal circunstancia se resuelva. Obviamente la partición donde esté el pg_wal/ podría llenarse. En caso de que eso suceda, PostgreSQL hará un PANIC shutdown, lo que implica que no se pierde ninguna transacción, pero hasta que no haya algo de espacio, la BD no podrá levantarse nuevamente. 
+
+Los archivos de transacciones tienen un tamaño fijo de 16M, la cantidad de archivos en /pg_wal depende de los parámetros min_wal_size y max_wal_size (generalmente no hay que tocarlos).
+
+Cuando algo sucede con el comando de traslado queda registrado en el log de postgresql, así que un vistazo al log de vez en cuando no está de más.
+
+Cuando todo está preparado, se hace restart de postgresql.
+
+-- Crear un backup
+------------------
+
+1) Iniciar el backup: 
+
+Conectarse al SGBD con el usuario postgres y ejecutar:
+
+select * from pg_walfile_name_offset(pg_start_backup('/var/backups/postgresql'));
+
+Ojo al nombre que devuelve: es el primer fichero de respaldo incremental que debemos copiar, los anteriores pueden ignorarse.
+
+2) salir y hacer una copia completa del directorio donde está el cluster (generalmente /var/lib/postgresql/11/main)
+
+cd /var/lib/postgresql/11
+tar czf /root/completo.tar.gz main
+
+3) Volver a entrar como postgres y ejecutar:
+
+select * from pg_walfile_name_offset(pg_stop_backup());
+
+la salida dice cual es el último segmento de transacciones durante la realización del backup.
+
+4) El backup completo es la suma del backup del cluster más las transacciones efectuadas en el SGBD mientras se hacía la copia, luego hay que mover al almacenamiento de seguridad:
+-> el backup del cluster (en nuestro ejemplo completo.tar.gz)
+-> los ficheros incrementales de /var/backups/postgresql a partir del que dijo el start_backup hasta el que dijo el stop_backup
+
+5) Todos los archivos wal que se han generado desde que se hizo el backup hasta el presente son igualmente necesarios para poder recuperar todo por completo y hacer restauración de punto en tiempo. Si solo se tienen los archivos generados en el paso 4 únicamente podrá volverse al estado en el momento en el que se hizo el backup.
+
+
+Listo!
+
+
+-- Recuperar un backup
+----------------------
+
+Para poder restaurar necesitaremos el backup completo, los ficheros incrementales que se generaron durante el respaldo (entre los comandos start y stop), y todos los posteriores. 
+
+Para hacer la recuperación nos convertimos en root y:
+
+1) Parar el SGBD 
+
+2) Eliminar todo el directorio del cluster 
+
+cd /var/lib/postgresql/11
+rm -r main
+
+3) Restaurar el backup completo
+
+cp /root/completo.tar.gz .
+tar xzf completo.tar.gz
+rm completo.tar.gz
+
+4) Copiar los ficheros incrementales respaldados en el directorio main/pg_wal comenzando en el que se indicó como inicio del backup. Hay que preservar los permisos en la copia (los archivos wal deben pertenecerle al usuario postgres)
+
+cd main/pg_wal
+cp -p /var/backups/postgresql/* .
+
+5) Crear (y cambiar dueño a usuario postgres) un fichero de instrucciones de restauración denominado "recovery.conf" en el directorio del cluster
+(p.e. vi /var/lib/postgresql/11/main/recovery.conf).
+
+Indicar en dicho archivo qué se debe hacer para restaurar. Lo más habitual es indicar dónde están los ficheros de restauración (los habíamos copiado en pg_wal) y hasta qué momento queremos restaurar:
+
+restore_command = 'cp /var/lib/postgresql/11/main/pg_wal/%f "%p"'
+recovery_target_time='2019-10-30 18:13:24.900726-06'
+
+6) Antes de arrancar la BD, puede ser importante impedir que se conecte nadie al SGBD para asegurar previamente que todo está en orden: para ello únicamente es necesario modificar el pg_hba.conf y poner reject en todas las líneas excepto la que permite que postgres esté conectado al SGBD.
+
+También es conveniente limpiar el directorio donde se estaban haciendo la transferencia de ficheros incrementales para que no se encuentre con uno que ya exista y quede detenido el traslado.
+
+rm /var/backups/postgresql/*
+
+Entonces podemos ya arrancar el servidor. 
+
+Pueden verse en la bitácora /var/log/postgresql/postgresql-11-main.log los efectos de la restauración: el servidor procede a leer los ficheros incrementales hasta el punto en tiempo dado.
+
+Puede haber sucedido que alguna transacción quede a medias: en el log puede indicar que se ejecute pg_wal_replay_resume() para que el proceso de archivo de ficheros wal se reanude normalmente.
+
+Una vez concluída la restauración, el recovery.conf es renombrado a recovery.done, puede eliminarse con toda seguridad.
+
+Comprobar que todo se restauró como debía, rehabilitar el acceso de los usuarios en el pg_hba.conf y recargar la configuración.
+
+Listo!
+
+-- Nota final
+-------------
+
+Seguramente se necesita hacer PITR para recuperar algunos datos en particular que fueron alterados incorrectamente, pero todo lo que sucedió en el cluster a partir de dicha situación puede ser correcto y no nos interesa perderlo. 
+
+En tal sentido, lo habitual es hacer la restauración en otro servidor, obtener los datos perdidos/actualizados por error y pasarlos "delicadamente" al servidor en producción. Eventualmente podría ser necesario detener el uso general en el servidor en producción mientras se efectúa el proceso de corrección para evitar problemas de integridad.

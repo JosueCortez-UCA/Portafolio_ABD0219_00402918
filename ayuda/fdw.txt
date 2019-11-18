@@ -1,0 +1,109 @@
+
+-- Estamos en el servidor remoto, aquel en el que se desea consultar información
+
+-- BD de ejemplo
+
+drop database if exists ucasoft_remoto;
+create database ucasoft_remoto;
+
+\c ucasoft_remoto uca
+
+drop table if exists departamento cascade;
+create table departamento(
+	denominacion varchar(100) not null,
+	constraint pk_departamento primary key (denominacion));
+
+insert into departamento values ('Remoto Ventas');
+insert into departamento values ('Remoto Gestión');
+insert into departamento values ('Remoto Ingeniería');
+
+drop table if exists miembro cascade;
+create table miembro(
+	DUI	char(10) not null,
+	nombre varchar(100) not null,
+	denominacion_departamento varchar(100) not null,
+	constraint pk_miembro primary key (DUI),
+	constraint fk_miembro_departamento foreign key (denominacion_departamento) 
+	references departamento(denominacion) on delete restrict on update cascade);
+
+insert into miembro values('04926243-5','Ana Ramírez','Remoto Ventas');
+insert into miembro values('12345678-1','Manolo Lama','Remoto Ventas');
+insert into miembro values('34345578-2','Esmeralda Alonso','Remoto Ventas');
+insert into miembro values('54235576-4','Juan Luque','Remoto Ventas');
+insert into miembro values('02112463-5','Susana Cantor','Remoto Gestión');
+insert into miembro values('53463278-1','Pedro Santos','Remoto Gestión');
+insert into miembro values('34531178-8','Carolina Flores','Remoto Gestión');
+insert into miembro values('22329787-2','Lucio Suárez','Remoto Gestión');
+insert into miembro values('89326243-7','Martín Deras','Remoto Ingeniería');
+insert into miembro values('72234278-3','Ramón Pérez','Remoto Ingeniería');
+insert into miembro values('24455578-6','Clara Datas','Remoto Ingeniería');
+insert into miembro values('54232478-2','Magdalena Díaz','Remoto Ingeniería');
+insert into miembro values('42334528-3','Antonio López','Remoto Ingeniería');
+
+-- Para los siguientes comandos debemos ser superusuario (postgres)
+
+\c - postgres
+
+-- 1) creamos usuario para el acceso desde el wrapper
+CREATE USER fdw_user WITH PASSWORD 'secretito';
+
+-- 2) le damos permisos para que pueda utilizar las tablas/esquema
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE miembro TO fdw_user;
+
+-- 3) revisamos que en pg_hba.conf / postgresql.conf ¡se permitan las conexiones remotas!
+
+-- Volvemos a nuestro servidor "local", desde el que queremos hacer consultas, también como super usuario
+
+\c ucasoft postgres
+
+-- 4) en la base de datos "local" (la que va a consultar datos remotos) instalamos la extensión correspondiente al wrapper del servidor remoto 
+CREATE EXTENSION postgres_fdw;
+
+\dx postgres_fdw
+
+-- 5) proporcionamos derecho de uso del FDW al usuario local que corresponda
+
+GRANT USAGE ON FOREIGN DATA WRAPPER postgres_fdw TO uca;
+
+-- 6) creamos el servidor remoto con los valores correspondientes (obviamente localhost lo reemplazaremos por una IP o FQDN)
+
+CREATE SERVER remoto FOREIGN DATA WRAPPER postgres_fdw OPTIONS (dbname 'ucasoft_remoto', host 'localhost', port '5432');
+
+-- 7) damos permiso al usuario para utilizar el servidor
+
+GRANT USAGE ON FOREIGN SERVER remoto TO uca;
+
+-- 8) establecemos el mapeo entre el usuario uca local y el remoto fdw_user
+
+CREATE USER MAPPING FOR uca SERVER remoto OPTIONS (user 'fdw_user', password 'secretito');
+
+-- 9) Como usuario común creamos el esquema local de la tabla remota
+
+\c - uca
+
+CREATE FOREIGN TABLE miembros_remotos (
+    DUI	char(10) not null,
+	nombre varchar(100) not null,
+	denominacion_departamento varchar(100) not null
+	-- constraint pk_miembro primary key (DUI)) OJO no se soportan PK/FK
+)
+SERVER remoto
+OPTIONS (schema_name 'public', table_name 'miembro');
+
+-- ¡ya podemos utilizarla localmente!
+
+select * from miembros_remotos;
+
+explain analyze select dui,count(*) from asiste,miembros_remotos where dui_miembro=dui group by dui;
+
+-- Obviamente es muy aburrido crear tabla por tabla, puedo importar un esquema entero, o un grupo de tablas del mismo
+
+CREATE SCHEMA esqremoto;
+
+IMPORT FOREIGN SCHEMA "public" FROM SERVER remoto INTO esqremoto;
+
+IMPORT FOREIGN SCHEMA "public" limit to (departamento) FROM SERVER remoto INTO esqremoto;
+
+-- ¡ojo con los permisos! esto no funcionará porque solo le dimos permiso a fwd_user sobre la tabla miembro
+
+select * from esqremoto.departamento;
