@@ -166,3 +166,12 @@ GRANT USAGE ON FOREIGN SERVER remoto_bz TO admin;
 CREATE USER MAPPING FOR admin SERVER remoto_sv OPTIONS (user 'postgres_fdw', password 'pass');
 CREATE USER MAPPING FOR admin SERVER remoto_cr OPTIONS (user 'postgres_fdw', password 'pass');
 CREATE USER MAPPING FOR admin SERVER remoto_bz OPTIONS (user 'postgres_fdw', password 'pass');
+
+/*
+	6
+*/
+\c - admin
+
+CREATE FOREIGN TABLE cliente_sv PARTITION OF cliente FOR VALUES IN ('sv') SERVER remoto_sv;
+CREATE FOREIGN TABLE cliente_cr PARTITION OF cliente FOR VALUES IN ('cr') SERVER remoto_cr;
+CREATE FOREIGN TABLE cliente_bz PARTITION OF cliente FOR VALUES IN ('bz') SERVER remoto_bz;
