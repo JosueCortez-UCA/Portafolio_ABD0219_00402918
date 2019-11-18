@@ -60,4 +60,13 @@ max_wal_senders = 10
 shared_preload_libraries = 'pglogical'
 track_commit_timestamp = on
 
-/etc/init.d/postgresql restart
+nano /etc/postgresql/11/main/pg_hba.conf
+local all all md5
+local replication all md5
+
+nano /etc/postgresql/11/standby/pg_hba.conf
+local all all md5
+local replication all md5
+
+service postgresql restart          -- opcion 1
+/etc/init.d/postgresql restart      -- opcion 2
