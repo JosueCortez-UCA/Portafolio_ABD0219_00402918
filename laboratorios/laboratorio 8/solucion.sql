@@ -79,7 +79,7 @@ psql -p 5432
 
 CREATE USER admin WITH PASSWORD 'lerolero' CREATEDB SUPERUSER REPLICATION;
 
-\c – admin
+\c - admin
 \i estructura-ucasoft.sql
 
 create extension pglogical;
@@ -89,5 +89,29 @@ node_name := 'proveedor',
 dsn := 'host=localhost port=5432 dbname=ucasoft user=admin password=lerolero'
 );
 
-SELECT pglogical.replication_set_add_all_tables
-('default', ARRAY['public']);
+SELECT pglogical.replication_set_add_all_tables('default', ARRAY['public']);
+
+/*
+    7
+*/
+-- en otra terminal
+sudo su
+su postgres
+psql -p 5433
+
+CREATE USER admin WITH PASSWORD 'lerolero' CREATEDB SUPERUSER REPLICATION;
+
+\c - admin
+\i estructura-ucasoft.sql
+
+create extension pglogical;
+
+SELECT pglogical.create_node(
+node_name := 'suscriptor',
+dsn := 'host=localhost port=5433 dbname=ucasoft user=admin password=lerolero'
+);
+
+SELECT pglogical.create_subscription(
+subscription_name := 'ucasoft_suscriptor',
+provider_dsn := 'host=localhost port=5432 dbname=ucasoft user=admin password=lerolero'
+);
