@@ -121,3 +121,9 @@ provider_dsn := 'host=localhost port=5432 dbname=ucasoft user=admin password=ler
 */
 -- en terminal para main
 \i datos-ucasoft.sql
+
+/*
+    9
+*/
+-- en terminal para standby
+select * from contrata;
