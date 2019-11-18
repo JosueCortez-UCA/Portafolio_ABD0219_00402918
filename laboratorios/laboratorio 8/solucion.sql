@@ -115,3 +115,9 @@ SELECT pglogical.create_subscription(
 subscription_name := 'ucasoft_suscriptor',
 provider_dsn := 'host=localhost port=5432 dbname=ucasoft user=admin password=lerolero'
 );
+
+/*
+    8
+*/
+-- en terminal para main
+\i datos-ucasoft.sql
