@@ -156,3 +156,14 @@ EXECUTE PROCEDURE pglogical_assign_repset()
 */
 -- en terminal para main
 \i reproductor-ucasoft.sql
+
+/*
+    12
+*/
+SELECT orden,nombre_cancion,artista_cancion,url
+FROM playlist,cancion,superpachanga
+WHERE superpachanga.anyo=2020
+    AND nombre_cancion=cancion.nombre
+    AND artista_cancion=cancion.artista
+ORDER BY orden ASC
+;
