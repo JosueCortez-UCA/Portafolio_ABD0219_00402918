@@ -30,3 +30,8 @@ CREATE USER uca WITH PASSWORD 'wii';
     2
 */
 pg_createcluster 11 standby
+
+/*
+    3
+*/
+pg_ctlcluster 11 standby start
