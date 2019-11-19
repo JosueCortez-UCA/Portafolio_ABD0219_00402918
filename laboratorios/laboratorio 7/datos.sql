@@ -1,3 +1,4 @@
+set datestyle to 'European';
     
 insert into proyecto values ('W-2016-1','Web DEI','Web',null,null,1500,'http://dei.uca.edu.sv');
 insert into proyecto values ('W-2017-1','Web UCA','Web',null,null,3500,'http://www.uca.edu.sv');
