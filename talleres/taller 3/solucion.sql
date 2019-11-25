@@ -168,6 +168,7 @@ CREATE TABLE notas(
     PRIMARY KEY (numero_anyo_asignatura,denominacion_nivel_grado_asignatura,numero_grado_asignatura,nombre_asignatura,NIE_alumno)
 );
 
+
     -- 1
 INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio)
 VALUES ('0000001-1','basica',6,2018,'Artistica','Poncio Pilato',8);
@@ -232,6 +233,7 @@ VALUES ('0000015-4','bachiller',3,2019,'Ciencias','Carlos Edgardo',8.6);
 INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio)
 VALUES ('0000016-4','bachiller',3,2019,'Seminario','Flor Valencia',7.44);
 
+
     -- Todo
 SELECT * FROM notas;
 
@@ -250,3 +252,8 @@ SELECT avg(nota_promedio) FROM notas;
     -- Nota promedio en 2018 y otra para 2019
 SELECT avg(nota_promedio) FROM notas WHERE numero_anyo_asignatura=2018;
 SELECT avg(nota_promedio) FROM notas WHERE numero_anyo_asignatura=2019;
+
+/*
+    Ejercicio 3
+*/
+
