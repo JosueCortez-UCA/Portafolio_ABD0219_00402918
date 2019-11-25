@@ -237,8 +237,10 @@ VALUES ('0000016-4','bachiller',3,2019,'Seminario','Flor Valencia',7.44);
     -- Todo
 SELECT * FROM notas;
 
-    -- Los del anyio 2018
+    -- Los del anyio 2018 y en 2019
 SELECT * FROM notas WHERE numero_anyo_asignatura=2018;
+SELECT * FROM notas WHERE numero_anyo_asignatura=2019;
+
 
     -- Los de bachillerato del anyo 2019
 SELECT * FROM notas WHERE numero_anyo_asignatura=2018 AND denominacion_nivel_grado_asignatura='bachiller';
@@ -246,14 +248,6 @@ SELECT * FROM notas WHERE numero_anyo_asignatura=2018 AND denominacion_nivel_gra
     -- Los que estudian Talleres en bachillerato
 SELECT * FROM notas WHERE nombre_asignatura='Talleres' AND denominacion_nivel_grado_asignatura='bachiller' allow filtering;
 
-    -- Nota promedio de todas las notas
-SELECT avg(nota_promedio) FROM notas;
-
-    -- Nota promedio en 2018 y otra para 2019
-SELECT avg(nota_promedio) FROM notas WHERE numero_anyo_asignatura=2018;
-SELECT avg(nota_promedio) FROM notas WHERE numero_anyo_asignatura=2019;
-
-/*
-    Ejercicio 3
-*/
-
+    -- Los que estudiaron sociales en basica en 2019 vs en 2018
+SELECT * FROM notas WHERE nombre_asignatura='Sociales' AND numero_anyo_asignatura=2019 AND denominacion_nivel_grado_asignatura='basica' allow filtering;
+SELECT * FROM notas WHERE nombre_asignatura='Sociales' AND numero_anyo_asignatura=2018 AND denominacion_nivel_grado_asignatura='basica' allow filtering;
