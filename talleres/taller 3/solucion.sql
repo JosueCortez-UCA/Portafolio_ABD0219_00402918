@@ -165,7 +165,7 @@ CREATE TABLE notas(
     nombre_asignatura varchar,
     nombre_alumno varchar,   
     nota_promedio decimal,
-    PRIMARY KEY (numero_anyo_asignatura,denominacion_nivel_grado_asignatura,numero_grado_asignatura,nota_promedio,nombre_asignatura,NIE_alumno)
+    PRIMARY KEY (numero_anyo_asignatura, denominacion_nivel_grado_asignatura, numero_grado_asignatura, nombre_asignatura, NIE_alumno)
 );
 
 
@@ -277,13 +277,4 @@ FROM notas
 WHERE numero_anyo_asignatura=2019
 GROUP BY denominacion_nivel_grado_asignatura, numero_grado_asignatura
 ORDER BY denominacion_nivel_grado_asignatura, numero_grado_asignatura
-;
-
-    -- 
-SELECT NIE_alumno, nota_promedio
-FROM notas
-WHERE numero_anyo_asignatura=2019
-GROUP BY denominacion_nivel_grado_asignatura, numero_grado_asignatura
-ORDER BY denominacion_nivel_grado_asignatura DESC, numero_grado_asignatura DESC, nota_promedio DESC
-allow filtering
 ;
