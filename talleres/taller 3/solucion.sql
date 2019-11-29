@@ -147,7 +147,7 @@ SELECT * FROM alumno;
     -- Ver todos los datos de inscripcion
 SELECT * FROM inscripcion;
 
-    -- listar los alimnos inscritos en bachillerato, y ver cual estan cursando
+    -- listar los alumnos inscritos en bachillerato, y ver cual anyio estan cursando
 SELECT nombre_alumno, numero_grado_asignatura FROM inscripcion WHERE denominacion_nivel_grado_asignatura='bachiller' allow filtering;
 
     -- ver las notas del alumno con nie 0000000-3
