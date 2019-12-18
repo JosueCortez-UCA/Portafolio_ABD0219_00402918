@@ -1,0 +1,56 @@
+drop database if exists cluster;
+create database cluster;
+
+\c cluster
+
+drop table if exists departamento cascade;
+create table departamento(
+	denominacion varchar(100) not null,
+	constraint pk_departamento primary key (denominacion));
+
+
+insert into departamento values ('Ventas');
+insert into departamento values ('Gestión');
+insert into departamento values ('Ingeniería');
+
+drop table if exists miembro cascade;
+create table miembro(
+	DUI	char(10) not null,
+	nombre varchar(100) not null,
+	denominacion_departamento varchar(100) not null,
+	constraint pk_miembro primary key (DUI),
+	constraint fk_miembro_departamento foreign key (denominacion_departamento) 
+	references departamento(denominacion) on delete restrict on update cascade);
+
+insert into miembro values('04926243-5','Ana Ramírez','Ventas');
+insert into miembro values('12345678-1','Manolo Lama','Ventas');
+insert into miembro values('34345578-2','Esmeralda Alonso','Ventas');
+insert into miembro values('54235576-4','Juan Luque','Ventas');
+insert into miembro values('02112463-5','Susana Cantor','Gestión');
+insert into miembro values('53463278-1','Pedro Santos','Gestión');
+insert into miembro values('34531178-8','Carolina Flores','Gestión');
+insert into miembro values('22329787-2','Lucio Suárez','Gestión');
+insert into miembro values('89326243-7','Martín Deras','Ingeniería');
+insert into miembro values('72234278-3','Ramón Pérez','Ingeniería');
+insert into miembro values('24455578-6','Clara Datas','Ingeniería');
+insert into miembro values('54232478-2','Magdalena Díaz','Ingeniería');
+insert into miembro values('42334528-3','Antonio López','Ingeniería');
+
+select * from miembro;
+
+select * from miembro order by dui;
+
+-- Ojo, mientras se hace el cluster la tabla se bloquea
+cluster verbose miembro using pk_miembro;
+
+-- Los datos se ordenan en ese momento, pero si se insertan/actualizan más hay que reclusterizar (tarea programada, obviamente)
+insert into miembro values('04232478-2','Sarah Domínguez','Ingeniería');
+
+select * from miembro;
+
+-- Ejecuta cluster en todas las tablas con un cluster previamente definido
+cluster verbose;
+
+select * from miembro;
+
+-- En una tabla grande en la que los datos son obtenidos generalmente en el orden del índice la diferencia en el tiempo de acceso puede ser notable.

@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Begin;</title>
+<meta name="generator" content="Etherpad">
+<meta name="author" content="Etherpad">
+<meta name="changedby" content="Etherpad">
+<meta charset="utf-8">
+<style>
+* {
+  font-family: arial, sans-serif;
+  font-size: 13px;
+  line-height: 17px;
+}
+ul.indent {
+  list-style-type: none;
+}
+ol {
+  list-style-type: none;
+  padding-left: 0;
+}
+body > ol {
+  counter-reset: first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth;
+}
+ol > li:before {
+  content: counter(first) ". ";
+  counter-increment: first;
+}
+ol > ol > li:before {
+  content: counter(first) "." counter(second) ". ";
+  counter-increment: second;
+}
+ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) ". ";
+  counter-increment: third;
+}
+ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";
+  counter-increment: fourth;
+}
+ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";
+  counter-increment: fifth;
+}
+ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";
+  counter-increment: sixth;
+}
+ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) ". ";
+  counter-increment: seventh;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) ". ";
+  counter-increment: eighth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) ". ";
+  counter-increment: ninth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) ". ";
+  counter-increment: tenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) ". ";
+  counter-increment: eleventh;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) ". ";
+  counter-increment: twelfth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) ". ";
+  counter-increment: thirteenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) ". ";
+  counter-increment: fourteenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) ". ";
+  counter-increment: fifteenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) "." counter(sixteenth) ". ";
+  counter-increment: sixteenth;
+}
+ol {
+  text-indent: 0px;
+}
+ol > ol {
+  text-indent: 10px;
+}
+ol > ol > ol {
+  text-indent: 20px;
+}
+ol > ol > ol > ol {
+  text-indent: 30px;
+}
+ol > ol > ol > ol > ol {
+  text-indent: 40px;
+}
+ol > ol > ol > ol > ol > ol {
+  text-indent: 50px;
+}
+ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 60px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 70px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 80px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 90px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 100px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 110px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 120px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 130px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 140px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 150px;
+}
+h1{font-size: 2.0em;line-height: 120%;}   h2{font-size: 1.5em;line-height: 120%;}   h3{font-size: 1.17em;line-height: 120%;}   h4{line-height: 120%;}   h5{font-size: 0.83em;line-height: 120%;}   h6{font-size: 0.75em;line-height: 120%;}   code{font-family: monospace;}[data-color="black"], .color\:black  { color:black; }
+[data-color="red"], .color\:red    { color:red; }
+[data-color="green"], .color\:green  { color:green; }
+[data-color="blue"], .color\:blue   { color:blue; }
+[data-color="yellow"], .color\:yellow { color:yellow; }
+[data-color="orange"], .color\:orange { color:orange; }
+</style>
+</head>
+<body>
+Hola, soy Kurt.<br><br>Gracias ante todo por llegar hasta ac&#225;. La situaci&#243;n es sumamente delicada y aprecio vuestro apoyo en este asunto... me siento solo y, sinceramente, tengo mucho miedo.<br><br>Pensaba que conoc&#237;a a Ale Rav, siempre fue algo reservado, extra&#241;o, pero jam&#225;s imagin&#233; lo que acaba de decir. Por ahora para referirme a &#233;l creo que usar&#233; el alias que &#233;l eligi&#243;, definitivamente no puedo dar su nombre real a&#250;n: no tengo m&#225;s pruebas que mi propio testimonio y no s&#233; qu&#233; conexiones podr&#225; tener en la FGR o la PNC, o la misma UCA... creo que ha chantajeado a mucha gente, estoy seguro de que instal&#243; troyanos por todos lados para poder obtener informaci&#243;n comprometedora y as&#237; tener poder e influencia perversa, as&#237; que no me atrevo a denunciarlo, al menos no a&#250;n. Por supuesto, yo tampoco les voy a dar mi nombre real: m&#225;s de alguno&#x2F;a de ustedes puede ser c&#243;mplice de Ale, cualquiera se podr&#237;a ver seducido por ese discurso absurdo.<br><br>Juela... si les soy sincero, lo que creo haber descubierto me hace sentir pr&#225;cticamente como que estoy en una pel&#237;cula de terror y que yo soy el primer personaje (s&#237;, el incauto), al que env&#237;an primero al otro barrio sin pena ni gloria... as&#237; que no, no me voy a quedar de brazos cruzados ante la situaci&#243;n, pero extremar&#233; tanto como pueda mi seguridad, quiero disfrutar la mucha vida que espero me quede a&#250;n.<br><br>Dicho eso, para poderles dar m&#225;s detalles necesito comprobar que efectivamente son de total confianza y comunicarnos a trav&#233;s de un canal que Ale no pueda ni imaginar: s&#233; que van a hacer un laboratorio en la asignatura de Administraci&#243;n de Bases de Datos, as&#237; que lo utilizar&#233; para comunicarme con ustedes seg&#250;n resuelven algunos ejercicios que les ir&#233; presentando.&nbsp;<br><br>Esto ser&#225; (espero) suficientemente seguro para ustedes y para mi.<br><br>No perdamos m&#225;s tiempo, tenemos que pasar a la acci&#243;n: con&#233;ctense al servidor dei2.uca.edu.sv por medio de <a href="https&#x3a;&#x2F;&#x2F;dei2&#x2e;uca&#x2e;edu&#x2e;sv&#x2F;phppgadmin">https:&#x2F;&#x2F;dei2.uca.edu.sv&#x2F;phppgadmin</a>, utilicen como nombre de usuario su carnet de estudiante con una u delante (u#########), la base de datos en la que pueden entrar tiene este mismo nombre. Su contrase&#241;a es el n&#250;mero de carnet (sin la u). Si est&#225;n fuera en los laboratorios tambi&#233;n pueden conectarse con un cliente gr&#225;fico, o psql para ejecutar los comandos y revisar el resultado.<br><br>Observen que los objetos que est&#225;n en su base de datos son los mismos que los de las pr&#225;cticas que han estado haciendo en clase de ABD... s&#237;, por fortuna tengo acceso al Moodle y pude obtener tales archivos, as&#237; ser&#225; mucho m&#225;s r&#225;pido de explicarles... no quiero pasar m&#225;s de 30 minutos conectado a Internet en el mismo lugar.<br><br>Hay una tabla, creo que la conocen bien: <strong>miembro</strong>. Su profesor se las da de tenerlo todo bajo control pero en realidad es bastante descuidado, para esta tabla seguro que invent&#243; los n&#250;meros de DUI, s&#237;, ya v&#237;: si est&#225;n correctos es por pura casualidad. Necesito que programen una funci&#243;n que valide un DUI que se le pase como par&#225;metro y que devuelva verdadero si es correcto o falso si no lo es. Deber&#225; validar longitud (10 caracteres), formato (todos d&#237;gitos num&#233;ricos con solo un gui&#243;n en la 9 posici&#243;n) y el d&#237;gito de comprobaci&#243;n debe ser correcto utilizando el algoritmo siguiente:<br>*<br>*Ejemplo: 01771967-8 -&gt; D&#237;gito verificador: 8<br>*<br>*Posici&#243;n -&gt; 9&nbsp;&nbsp;&nbsp;&nbsp; 8&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2<br>*DUI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; 0&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp; 9&nbsp;&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7<br>*<br>*suma&nbsp; = (9*0)+(8*1)+(7*7)+(6*7)+(5*1)+(4*9)+(3*6)+(2*7) =&gt; 172<br>*resto = suma M&#211;DULO 10 =&gt; MOD(172,10) = 2<br>*resta = 10 - resto =&gt; 10 - 2 = 8<br>*D&#237;gito verificador=Resta (8=8) =&gt; DUI valido.<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>Es muy importante que la funci&#243;n se cree con el siguiente encabezado:<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>*CREATE OR REPLACE FUNCTION valida_DUI(DUI VARCHAR) RETURNS BOOLEAN AS $$<br><br>Hagan varias pruebas de la funci&#243;n, solo la &#250;ltima de las siguientes consultas devolver&#225; el valor t (true):<br>*select valida_DUI(&#x27;049262044-5&#x27;);<br>*select valida_DUI(&#x27;04-2620425&#x27;);<br>*select valida_DUI(&#x27;04a26244-5&#x27;);<br>*select valida_DUI(&#x27;04926243-5&#x27;);<br>*select valida_DUI(&#x27;04926244-5&#x27;);<br><br>Cuando ya funcione hagan la comprobaci&#243;n de cu&#225;ntos DUI est&#225;n correctos en la tabla miembro, e ingresen el resultado (un solo dato) en la tabla duisvalidos. Si es el n&#250;mero correcto y desarrollaron la funci&#243;n que les solicit&#233;, revisen la tabla kurt_out: espero estar vivo para poder darles el enlace a las siguientes instrucciones en dicha tabla.<br><br>Y gracias por ayudarme.<br><br>Kurt.<br>
+</body>
+</html>

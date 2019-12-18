@@ -1,0 +1,157 @@
+1) Comencemos de cero (por si acaso), ya que hemos hecho muchos cambios en los archivos de configuración. 
+
+Eliminemos la versión de postgresql con el comando:
+
+apt purge postgresql postgresql-11 postgresql-common
+
+-> puede preguntar Remove PostgreSQL directories when package is purged? Sí
+
+Eliminemos paquetes innecesarios
+
+apt autoremove
+
+¡Ojo!, aún pueden quedar algunos directorios restantes (debido a que instalamos paquetes no dependientes )
+rm -r /var/lib/postgresql/
+rm -r /etc/postgresql-common/
+
+2) Instalemos postgresql
+
+apt install postgresql
+
+3) Corroboremos la instalación del cluster por defecto y el estado del mismo
+
+pg_lsclusters
+
+pg_ctlcluster 11 main status
+
+4) creamos otro cluster (para simular otro servidor)
+
+pg_createcluster 11 standby
+
+-> ¡Muy chivo! se ha replicado toda la configuración en /etc/postgresql y se le ha asignado otro puerto (5433).
+-> Existe configuración común a todos los clusters que se puede ubicar en /etc/postgresql-common
+
+5) Podemos arrancar el nuevo cluster manualmente con el siguiente comando (el script de gestión general del servicio de PostgreSQL ejecuta el comando indicado sobre todos los clusters del servidor)
+
+pg_ctlcluster 11 standby start
+
+6) Instalar pglogical (https://www.2ndquadrant.com/es/resources/pglogical/)
+
+apt-get install postgresql-11-pglogical
+
+7) Configuración de parámetros en postgresql.conf (primario y réplica)
+
+wal_level = 'logical'
+max_worker_processes = 10  
+max_replication_slots = 10 
+max_wal_senders = 10       
+shared_preload_libraries = 'pglogical'
+track_commit_timestamp = on 
+
+Cambio de peer por md5 en línea de acceso local y de replicación para usuarios no postgres en pg_hba.conf (primario y réplica)
+
+local   all             all                                     md5
+local   replication     all                                     md5
+
+reiniciar con: 
+
+service postgresql restart (o /etc/init.d/postgresql restart)
+
+8) Conectarse al nodo principal 
+
+psql -p 5432
+
+a) crear el usuario dueño de la BD, mismo que ejecutará la replicación
+
+create user admin password 'admin' createdb superuser replication;
+
+b) conectarse con dicho usuario, crear la BD y su estructura
+
+\c - admin
+
+\i estructura-ucasoft.sql
+
+c) crear la extensión pglogical en la BD ucasoft
+
+create extension pglogical;
+
+d) crear el nodo primario (proveedor) en la BD como usuario admin
+
+SELECT pglogical.create_node(
+    node_name := 'proveedor',
+    dsn := 'host=localhost port=5432 dbname=ucasoft user=admin password=admin'
+);
+
+e) Agregamos (en este caso todas) las tablas que serán replicadas a un set que denominaremos default.
+
+SELECT pglogical.replication_set_add_all_tables('default', ARRAY['public']);
+
+9) Conectarse al nodo réplica
+
+psql -p 5433
+
+a) crear el usuario dueño de la BD, mismo que ejecutará la replicación
+
+create user admin password 'admin' createdb superuser replication;
+
+b) conectarse con dicho usuario y crear la BD y su estructura
+
+\c - admin
+\i estructura-ucasoft.sql
+
+c) crear la extensión pglogical en la BD ucasoft
+
+create extension pglogical;
+
+d) Creamos el nodo réplica (suscriptor) en la BD ucasoft como usuario admin
+
+SELECT pglogical.create_node(
+    node_name := 'suscriptor',
+    dsn := 'host=localhost port=5433 dbname=ucasoft user=admin password=admin'
+);
+
+e) Activamos la conexión con el proveedor para iniciar el proceso de replicación
+
+SELECT pglogical.create_subscription(
+    subscription_name := 'ucasoft_suscriptor',
+    provider_dsn := 'host=localhost port=5432 dbname=ucasoft user=admin password=admin'
+);
+
+11) Insertamos los datos en el primario
+\i datos-ucasoft.sql 
+
+12) Comprobamos que en la réplica están toditos los mismos datos
+select * from contrata;
+
+13) Activamos la inclusión de tablas nuevas en el set de tablas replicado utilizando triggers de eventos
+
+CREATE OR REPLACE FUNCTION pglogical_assign_repset()
+RETURNS event_trigger AS $$
+DECLARE obj record;
+BEGIN
+    FOR obj IN SELECT * FROM pg_event_trigger_ddl_commands()
+    LOOP
+        IF obj.object_type = 'table' THEN
+            PERFORM pglogical.replication_set_add_table('default', obj.objid);
+        END IF;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE EVENT TRIGGER pglogical_assign_repset_trg
+    ON ddl_command_end
+    WHEN TAG IN ('CREATE TABLE', 'CREATE TABLE AS')
+    EXECUTE PROCEDURE pglogical_assign_repset();
+
+14) Ejecute create tables replicados en el nodo primario e insertar datos
+
+\i reproductor-ucasoft.sql
+
+15) Corroborar que se transmitieron las tablas y datos a la réplica
+
+SELECT orden,nombre_cancion,artista_cancion,url 
+FROM playlist,cancion,superpachanga 
+WHERE superpachanga.anyo=2020 
+  AND nombre_cancion=cancion.nombre
+  AND artista_cancion=cancion.artista
+ORDER BY orden ASC;

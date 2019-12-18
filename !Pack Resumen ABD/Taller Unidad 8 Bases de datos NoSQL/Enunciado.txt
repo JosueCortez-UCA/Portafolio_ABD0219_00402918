@@ -1,0 +1,118 @@
+Introducción
+------------
+
+El colegio Martín Baró necesita hacer consultas masivas a toda la base de datos de expedientes para analizar los resultados académicos de las y los estudiantes, pero claro, el hecho de que la dirección académica de la institución esté consultando la BD con semejantes volúmenes de información y cálculos típicos de inteligencia de negocios no debe afectar en absoluto el trabajo normal del colegio.
+
+En tal sentido se le ha propuesto hacer una exportación diaria de los datos de las notas para hacer tal explotación en un servidor dedicado a tal fin y, considerando además el propósito específico de esta labor, se sugiere utilizar un SGBD no relacional.
+
+Tras varias pruebas técnicas se han decidido por Apache Cassandra y, después de no pocas entrevistas con la dirección académica para convencer a sus miembros de que es sumamente importante definir a priori las consultas que se realizarán a la BD, se han establecido como consultas elementales las siguientes:
+
+1) Promedio, máximo y mínimo de notas por año, nivel y grado
+2) Nombres de las personas que obtuvieron las notas máximas por año 
+
+El equipo tendrá por tanto que desarrollar las consultas y construir las familias de columnas (tablas) que sean necesarias para responder a dichas peticiones en el SGBD NoSQL Cassandra, tomando en cuenta que la estructura relacional de partida es la siguiente:
+
+create table alumno(
+    NIE char(10) not null,
+    nombre varchar(100) not null,
+    constraint pk_alumno primary key (NIE));
+    
+create table año(
+    numero  smallint not null,
+    constraint pk_año primary key (numero));
+
+create table nivel(
+    denominacion    char(10) not null,
+    constraint pk_nivel primary key (denominacion));
+
+create table grado(
+    denominacion_nivel char(10) not null,
+    numero  smallint not null,
+    constraint pk_grado primary key (denominacion_nivel,numero),
+    constraint fk_grado_nivel foreign key (denominacion_nivel)
+    references nivel(denominacion) on delete cascade on update cascade
+    );
+
+create table asignatura(
+    denominacion_nivel_grado char(10) not null,
+    numero_grado smallint not null,
+    numero_año smallint not null,
+    nombre varchar(100) not null,
+    constraint pk_asignatura primary key (denominacion_nivel_grado,numero_grado,numero_año,nombre),
+    constraint fk_asignatura_grado foreign key (denominacion_nivel_grado,numero_grado)
+    references grado(denominacion_nivel,numero) on delete restrict on update cascade,
+    constraint fk_asignatura_año foreign key (numero_año)
+    references año(numero) on delete restrict on update cascade
+    );
+    
+create type tipo_nota as (
+    numerica smallint,
+    cualitativa varchar(20)
+);
+
+create table inscripcion(
+    NIE_alumno char(10) not null,   
+    denominacion_nivel_grado_asignatura char(10) not null,
+    numero_grado_asignatura smallint not null,
+    numero_año_asignatura smallint not null,
+    nombre_asignatura varchar(100) not null,
+    notas tipo_nota[],
+    constraint pk_inscripcion primary key (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_año_asignatura,nombre_asignatura),
+    constraint fk_inscripcion_alumno foreign key (NIE_alumno)
+    references alumno(NIE) on delete restrict on update cascade,
+    constraint fk_inscripcion_asignatura foreign key (denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_año_asignatura,nombre_asignatura)
+    references asignatura(denominacion_nivel_grado,numero_grado,numero_año,nombre) on delete restrict on update cascade
+);
+
+
+Ejercicio 1)
+------------
+
+Como puede observar, las tablas que tienen importancia para lo solicitado son alumno e inscripcion, y como no se pueden hacer composiciones (joins) se tiene que "denormalizar". 
+
+Dado que no se pretende invertir mucho tiempo en este ejercicio, no se podrá utilizar una estructura "elegante" para el almacenamiento (como la siguiente), porque en tal caso no se podría hacer fácilmente agrupación sobre el valor (calificacion_numerica) de las notas sin tener que programar una función de usuario que extraiga dicho valor. 
+
+En cualquier caso realice algunos inserts y selects básicos sobre la siguiente familia de columnas.
+
+CREATE TYPE tipo_nota (
+    calificacion_numerica decimal,
+    calificacion_cualitativa varchar
+);
+
+CREATE TABLE inscripcion(
+    NIE_alumno varchar,
+    denominacion_nivel_grado_asignatura varchar,
+    numero_grado_asignatura tinyint,
+    numero_anyo_asignatura int,
+    nombre_asignatura varchar,
+    nombre_alumno varchar,   
+    notas map <varchar,frozen <tipo_nota>>,
+    PRIMARY KEY (numero_anyo_asignatura,denominacion_nivel_grado_asignatura,numero_grado_asignatura,nombre_asignatura,NIE_alumno)
+);
+
+Tome en cuenta que la sintaxis de un mapa de UDT como ese es: 
+{
+ 'clave1':{campo:valor,campo:valor},
+ 'clave2':{campo:valor,campo:valor}
+}
+
+Si el valor es de tipo texto (como en el caso de la calificacion_cualitativa) tendrá que expresarlo entre comillas simples ''.
+
+
+Ejercicio 2)
+------------
+
+Debido a la limitación vista en el ejercicio 1, se evidencia que es necesario trasladar la información de la BD relacional a la BD en Cassandra mediante la ejecución de un proceso diario de ETL (https://es.wikipedia.org/wiki/Extract,_transform_and_load, una buena herramienta libre para ello es http://scriptella.org/ o el conocido como "Kettle" de Pentaho https://help.pentaho.com/Documentation/8.2/Products/Data_Integration), con el que se efectuará la extracción de datos, el promediado de todas las notas obtenidas hasta la fecha por cada alumno y su posterior inserción en Cassandra, en tal sentido:
+
+a) Cree en Cassandra una familia de columnas (tabla) similar a la anterior de nombre "notas", en la que se sustituya la columna de tipo mapa "notas" por otra denominada "nota_promedio" de tipo decimal.
+
+b) Efectúe inserts en el que se consideren por lo menos dos años, dos niveles por año, dos grados por nivel y año, dos alumnos por grado nivel y año (16 inserts). Ejecute un select * para comprobar su funcionamiento.
+
+Ejercicio 3)
+------------
+
+Considerando los datos ingresados en el ejercicio 2:
+
+1) Efectúe consultas que calculen el promedio, máximo y mínimo de notas por año, nivel y grado. Deberá elaborar una consulta por cada año utilizando en el WHERE la columna de partición, y agrupar y ordenar usando las columnas de clustering nivel y grado.
+
+2) Calcule la nota máxima por año y después obtenga el nombre y NIE de quien/es obtuvieron dicha nota. Dado que en Cassandra no es posible realizar subconsultas, deberá realizar primero la consulta de la nota máxima agrupando por año y luego efectuar consultas por cada año y nota para obtener el nombre y NIE (no olvide expresar ALLOW FILTERING para que Cassandra pueda hacer la búsqueda). 

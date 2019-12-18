@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Begin;final</title>
+<meta name="generator" content="Etherpad">
+<meta name="author" content="Etherpad">
+<meta name="changedby" content="Etherpad">
+<meta charset="utf-8">
+<style>
+* {
+  font-family: arial, sans-serif;
+  font-size: 13px;
+  line-height: 17px;
+}
+ul.indent {
+  list-style-type: none;
+}
+ol {
+  list-style-type: none;
+  padding-left: 0;
+}
+body > ol {
+  counter-reset: first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth;
+}
+ol > li:before {
+  content: counter(first) ". ";
+  counter-increment: first;
+}
+ol > ol > li:before {
+  content: counter(first) "." counter(second) ". ";
+  counter-increment: second;
+}
+ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) ". ";
+  counter-increment: third;
+}
+ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";
+  counter-increment: fourth;
+}
+ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";
+  counter-increment: fifth;
+}
+ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";
+  counter-increment: sixth;
+}
+ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) ". ";
+  counter-increment: seventh;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) ". ";
+  counter-increment: eighth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) ". ";
+  counter-increment: ninth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) ". ";
+  counter-increment: tenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) ". ";
+  counter-increment: eleventh;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) ". ";
+  counter-increment: twelfth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) ". ";
+  counter-increment: thirteenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) ". ";
+  counter-increment: fourteenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) ". ";
+  counter-increment: fifteenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) "." counter(sixteenth) ". ";
+  counter-increment: sixteenth;
+}
+ol {
+  text-indent: 0px;
+}
+ol > ol {
+  text-indent: 10px;
+}
+ol > ol > ol {
+  text-indent: 20px;
+}
+ol > ol > ol > ol {
+  text-indent: 30px;
+}
+ol > ol > ol > ol > ol {
+  text-indent: 40px;
+}
+ol > ol > ol > ol > ol > ol {
+  text-indent: 50px;
+}
+ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 60px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 70px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 80px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 90px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 100px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 110px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 120px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 130px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 140px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 150px;
+}
+h1{font-size: 2.0em;line-height: 120%;}   h2{font-size: 1.5em;line-height: 120%;}   h3{font-size: 1.17em;line-height: 120%;}   h4{line-height: 120%;}   h5{font-size: 0.83em;line-height: 120%;}   h6{font-size: 0.75em;line-height: 120%;}   code{font-family: monospace;}[data-color="black"], .color\:black  { color:black; }
+[data-color="red"], .color\:red    { color:red; }
+[data-color="green"], .color\:green  { color:green; }
+[data-color="blue"], .color\:blue   { color:blue; }
+[data-color="yellow"], .color\:yellow { color:yellow; }
+[data-color="orange"], .color\:orange { color:orange; }
+</style>
+</head>
+<body>
+&#161;Sab&#237;a que lo lograr&#237;as!&nbsp;<br><br>Perd&#243;n, pero ahorita no puedo entretenerme con halagos, tengo informaci&#243;n nueva que debo compartir contigo de inmediato: me ha contado una compa&#241;era que Ale Rav cre&#243; un c&#243;digo que utilizar&#225; para detonar las bombas colocadas en la base de todos los edificios de la universidad.&nbsp;<br><br>No puedo decirte su nombre, pero su alias siembre fue Ada Jarvis.<br><br>Lo malo es que creo que Ale Rav descubri&#243; la identidad de Ada, hoy fui a buscarla y no la encuentro por ning&#250;n lado, adem&#225;s vi su laptop destrozada en un basurero cerca de donde ella suele pasar... inmediatamente le escrib&#237; al whatsapp, se puso en l&#237;nea por unos segundos y me respondi&#243; este mensaje... luego apag&#243; su tel&#233;fono porque ya no le cayeron los siguientes que le envi&#233; ni respondi&#243; a mis llamadas:<br><br><em>&#8220;Dos reinos tienen una lucha infernal: sus caballeros cabalgan dividiendo aire y cuerpos con mandobles y lanzas, los arqueros ensartan carne y huesos disparando hasta vaciar su carcaj, la vanguardia avanza a doble paso y las reinas son guerreras indomables que destrozan a quien intente detenerlas en su camino&#8230; en esta guerra, la muerte sangrienta parece un inocente deporte. Sin embargo, los reyes se adversan enrocados tras las murallas, esperando cobardes a que todo termine y buscar bajo los tres campos de batalla las piezas del tesoro inmemorial de quien quiere volver para destruir el mundo.&#8221;</em>.<br><br>Ada siempre fue as&#237; de extra&#241;a, introvertida, evasiva... y adorable, glups... debo confesarles que estoy loco por ella, hasta ahora me doy cuenta de cu&#225;nto me gusta y me importa, no podr&#237;a soportar que le haya sucedido algo malo.<br><br>Pero, sinceramente, no entiendo su mensaje, solo se me ocurre que me haya dejado algo en el polideportivo, ella sol&#237;a ir a correr a la cancha, dec&#237;a que le gustaba porque as&#237; estaba &quot;reunida consigo misma y el mundo val&#237;a v... &quot; (seh, siempre fue as&#237; de bien hablada),... pero yo no puedo ir a la cancha sin correr un riesgo terrible: por favor ve a dar una vuelta por all&#225; y ay&#250;dame a descifrar su mensaje.<br><br>&#161;Gracias por tu ayuda!<br><br>Kurt.<br>
+</body>
+</html>

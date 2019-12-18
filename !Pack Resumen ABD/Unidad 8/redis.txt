@@ -1,0 +1,225 @@
+===================
+Clave-valor / redis
+===================
+
+Links
+-----
+
+Principal: https://redis.io/
+Historia: https://en.wikipedia.org/wiki/Redis#History
+Replicación: master-slave, shard o réplica, con HA, no multi-master
+https://blog.usejournal.com/first-step-to-redis-cluster-7712e1c31847
+
+Instalación
+-----------
+
+apt-get install redis-server
+
+Configuración /etc/redis/redis.conf
+-----------------------------------
+
+-> uso de recursos
+databases
+maxclients
+maxmemory 
+maxmemory-policy
+
+-> autenticación y usuarios
+requirepass 
+
+-> persistencia
+save
+
+clientes
+--------
+redis-cli
+https://redisdesktop.com/
+
+comandos de entrada e información
+---------------------------------
+
+dentro del cliente
+
+AUTH
+INFO
+
+crear BD
+--------
+No se puede crear BDs diferentes de las establecidos en .conf (por defecto se trabaja en la 0)
+
+-> Elegir BD de trabajo
+SELECT 7
+
+-> Intercambiar datos entre BD
+SWAPDB 6 5
+
+-> Borrar todo
+FLUSHDB / FLUSHALL
+
+-> Migrar datos a otro server (IP, puerto, clave/s, BD, timeout, COPY/REPLACE/KEYS)
+MIGRATE 192.168.1.20 6379 key_1 7 8000 COPY
+
+
+Operaciones
+-----------
+-> insertar
+
+SET cosa quisicosa
+EXISTS cosa
+
+MOVE cosa 7
+RENAME cosa cosita
+
+-> transacciones
+MULTI
+SET contador 1
+INCR contador
+INCRBY contador 4
+GET contador
+EXEC / DISCARD
+
+-> eliminar/expirar
+
+SET cosa quisicosa
+GET cosa
+DEL cosa
+GET cosa
+
+si la clave tiene millones de valores tardaría: borrar en background
+SET cosa quisicosa
+UNLINK cosa 
+
+expiración
+
+SET cosa quisicosa
+EXPIRE key 5
+GET cosa
+... 5 segundos
+GET cosa
+
+SET cosa quisicosa EX 10
+... 5 segundos
+TTL cosa
+GET cosa
+... 5 segundos
+GET cosa
+
+-> actualizar
+
+SET cosa quisicosa
+GET cosa
+SET cosa 100
+GET cosa
+
+-> consultar
+GET cosa
+RANDOMKEY
+TYPE cosa
+
+tipos de datos
+--------------
+
+-> strings (cadenas, enteros y flotantes)
+
+SET cosa lero
+GET cosa
+APPEND cosa lero
+
+SET contador 1
+INCR contador
+INCRBY contador 4
+GET contador
+
+SET precio:1001 57.50
+INCRBYFLOAT precio:1001 1.75
+
+-> listas
+LPUSH nosqldbs redis 
+RPUSH nosqldbs cassandra 
+LPUSH nosqldbs couchdb memcached
+RPUSH nosqldbs couchbase bigtable mongodb
+LRANGE nosqldbs 0 10
+LINDEX nosqldbs 5
+LLEN nosqldbs
+LREM nosqldbs 1 bigtable
+RPOP nosqldbs
+RPOPLPUSH nosqldbs nosqldbs
+
+-> hash (objetos)
+HSET miembro:"Juan Rodríguez" dui 01234567-8
+HMSET miembro:"Juan Rodríguez" dui 01234567-8 departamento ventas salario 1475
+HEXISTS miembro:"Juan Rodríguez" correo
+HEXISTS miembro:"Juan Rodríguez" departamento
+HKEYS miembro:"Juan Rodríguez"
+HVALS miembro:"Juan Rodríguez"
+HGET miembro:"Juan Rodríguez" departamento
+HMGET miembro:"Juan Rodríguez" departamento dui
+HGETALL miembro:"Juan Rodríguez"
+HDEL miembro:"Juan Rodríguez" departamento
+HINCRBYFLOAT miembro:"Juan Rodríguez" salario 50.70
+
+-> sets (de strings)
+SADD nosqldbs redis 
+SADD nosqldbs cassandra couchdb memcached couchbase bigtable mongodb
+SMEMBERS nosqldbs
+SISMEMBER nosqldbs hbase
+SISMEMBER nosqldbs cassandra
+SCARD nosqldbs
+SRANDMEMBER nosqldbs
+SREM nosqldbs bigtable
+SPOP nosqldbs
+
+SADD rdbs postgresql mariadb 
+SUNION rdbs nosqldbs
+SUNIONSTORE dbs rdbs nosqldbs
+
+SINTER dbs nosqldbs
+SINTERSTORE algunasdbs dbs nosqldbs
+SMEMBERS algunasdbs 
+
+-> sets ordenados (de strings)
+ZADD hackers 1940 "Alan Kay"
+ZADD hackers 1957 "Sophie Wilson" 1953 "Richard Stallman" 1949 "Anita Borg" 1965 "Yukihiro Matsumoto" 1914 "Hedy Lamarr" 1916 "Claude Shannon" 1969 "Linus Torvalds" 1912 "Alan Turing"
+ZRANGE hackers 0 -1
+ZRANGE hackers 0 -1 WITHSCORES
+ZREVRANGE hackers 0 -1
+ZRANGEBYSCORE hackers -inf 1950
+ZRANK hackers "Richard Stallman"
+ZRANGEBYSCORE hackers -1 1950
+ZREMRANGEBYSCORE hackers 1940 1960
+
+ZADD hackers 0 "Alan Kay" 0 "Sophie Wilson" 0 "Richard Stallman" 0  "Anita Borg" 0 "Yukihiro Matsumoto" 0 "Hedy Lamarr" 0 "Claude Shannon"  0 "Linus Torvalds" 0 "Alan Turing"
+ZRANGEBYLEX hackers [B [P
+
+crear/consultar estructuras
+---------------------------
+Como se ha visto no hay nada similar a tablas o joins, hay que hacer una integración de hashs y sets para que podamos tener una funcionalidad similar
+
+MULTI
+HMSET producto:100 denominacion "laptop HP Pavilion 12" desc "Buena laptop, algo chola" precio 840 tipo laptop
+ZADD lista_productos 100 producto:100
+ZADD precio_productos 840 producto:100
+EXEC
+
+MULTI
+HMSET producto:101 denominacion "laptop Dell Inspiron 4" desc "Laptop regular, pesada" precio 620 tipo laptop
+ZADD lista_productos 101 producto:101
+ZADD precio_productos 620 producto:101
+EXEC
+
+MULTI
+HMSET producto:102 denominacion "laptop Apple Macbook Pro" desc "Laptop fancy, carísima" precio 1320 tipo laptop
+ZADD lista_productos 102 producto:102
+ZADD precio_productos 1320 producto:102
+EXEC
+
+MULTI
+HMSET producto:103 denominacion "PC Lenovo Thinkcentre 3" desc "PC uso hogar, SFF" precio 700.40 tipo pc
+ZADD lista_productos 103 producto:103
+ZADD precio_productos 700.40 producto:103
+EXEC
+
+ZRANGEBYSCORE precio_productos 500 1000
+HGETALL producto:100
+HGETALL producto:101
+

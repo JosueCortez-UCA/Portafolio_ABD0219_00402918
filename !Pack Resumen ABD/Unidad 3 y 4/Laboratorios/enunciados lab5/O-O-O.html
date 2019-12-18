@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>O-O-O</title>
+<meta name="generator" content="Etherpad">
+<meta name="author" content="Etherpad">
+<meta name="changedby" content="Etherpad">
+<meta charset="utf-8">
+<style>
+* {
+  font-family: arial, sans-serif;
+  font-size: 13px;
+  line-height: 17px;
+}
+ul.indent {
+  list-style-type: none;
+}
+ol {
+  list-style-type: none;
+  padding-left: 0;
+}
+body > ol {
+  counter-reset: first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth;
+}
+ol > li:before {
+  content: counter(first) ". ";
+  counter-increment: first;
+}
+ol > ol > li:before {
+  content: counter(first) "." counter(second) ". ";
+  counter-increment: second;
+}
+ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) ". ";
+  counter-increment: third;
+}
+ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) ". ";
+  counter-increment: fourth;
+}
+ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) ". ";
+  counter-increment: fifth;
+}
+ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) ". ";
+  counter-increment: sixth;
+}
+ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) ". ";
+  counter-increment: seventh;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) ". ";
+  counter-increment: eighth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) ". ";
+  counter-increment: ninth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) ". ";
+  counter-increment: tenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) ". ";
+  counter-increment: eleventh;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) ". ";
+  counter-increment: twelfth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) ". ";
+  counter-increment: thirteenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) ". ";
+  counter-increment: fourteenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) ". ";
+  counter-increment: fifteenth;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > li:before {
+  content: counter(first) "." counter(second) "." counter(third) "." counter(fourth) "." counter(fifth) "." counter(sixth) "." counter(seventh) "." counter(eighth) "." counter(ninth) "." counter(tenth) "." counter(eleventh) "." counter(twelfth) "." counter(thirteenth) "." counter(fourteenth) "." counter(fifteenth) "." counter(sixteenth) ". ";
+  counter-increment: sixteenth;
+}
+ol {
+  text-indent: 0px;
+}
+ol > ol {
+  text-indent: 10px;
+}
+ol > ol > ol {
+  text-indent: 20px;
+}
+ol > ol > ol > ol {
+  text-indent: 30px;
+}
+ol > ol > ol > ol > ol {
+  text-indent: 40px;
+}
+ol > ol > ol > ol > ol > ol {
+  text-indent: 50px;
+}
+ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 60px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 70px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 80px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 90px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 100px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 110px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 120px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 130px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 140px;
+}
+ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol > ol {
+  text-indent: 150px;
+}
+h1{font-size: 2.0em;line-height: 120%;}   h2{font-size: 1.5em;line-height: 120%;}   h3{font-size: 1.17em;line-height: 120%;}   h4{line-height: 120%;}   h5{font-size: 0.83em;line-height: 120%;}   h6{font-size: 0.75em;line-height: 120%;}   code{font-family: monospace;}[data-color="black"], .color\:black  { color:black; }
+[data-color="red"], .color\:red    { color:red; }
+[data-color="green"], .color\:green  { color:green; }
+[data-color="blue"], .color\:blue   { color:blue; }
+[data-color="yellow"], .color\:yellow { color:yellow; }
+[data-color="orange"], .color\:orange { color:orange; }
+</style>
+</head>
+<body>
+Hey qu&#233; ondas, soy Ada Jarvis y, sinceramente, me importa un semerendo pito quien eres vos, seguro que te envi&#243; Kurt porque aquel c.... debe estar bien escondido, y s&#237;, al menos por esta vez, tiene un buen motivo para que no se le vea el pelo.&nbsp;<br><br>Entonces ponele coco a lo siguiente, la situaci&#243;n es muy grave y es importante que te enfoqu&#233;s: el idiota de Kurt descubri&#243; el plan de Ale y, t&#237;pico en &#233;l, no pudo mantener el pico cerrado, as&#237; que aqu&#237; est&#225;s vos, tan involucrado&#x2F;a como yo... con lo tranquila que estaba... si Ale quer&#237;a mandar a volar cada ladrillo de la UCA, chivo pues, &#161;no era mi problema!... bueno, la verdad... reconozco que, s&#237;, s&#237; lo era, y por eso ayer le dije a Kurt que he descubierto el c&#243;digo de detonaci&#243;n que el maldito bastardo de Ale hab&#237;a estado probando en el lab, as&#237; que ahorita lo estoy revisando.<br><br>Shit, me pareci&#243; ver que por ah&#237; viene Ale: bueno, no tengo mucho tiempo, lo &#250;ltimo que me dijo Kurt es que se comunicaba con ustedes haciendo programitas de juguete en Administraci&#243;n de Bases de Datos... de hecho, ya vi lo que hiciste y sorry, mejor segu&#237; practicando con algo de mayor nivel &#191;no crees? &#161;no es por gusto que est&#225;s en segundo!.<br><br>Te propongo que resuelvas lo siguiente: hay una relaci&#243;n entre los miembros y el departamento en el que trabajan, y otra en sentido contrario para aquellos miembros que son representantes del departamento. Ser&#237;a absurdo que una persona representante de un departamento trabaje para otro departamento. Por ello deber&#225;s crear una funci&#243;n con el siguiente encabezado:<br><br>*CREATE OR REPLACE FUNCTION representa_trabaja() RETURNS trigger AS $$<br>&nbsp;&nbsp;&nbsp;&nbsp;<br>Por un lado, la funci&#243;n deber&#225; rechazar la inserci&#243;n o actualizaci&#243;n de un departamento con un representante que no trabaje para dicho departamento, por otro lado, si hubiera una actualizaci&#243;n del departamento en el que un miembro trabaja, &#233;sta deber&#225; rechazarse si resultara que el miembro es el representante del mismo.&nbsp;<br><br>La idea es que hagas dos triggers, uno para cada caso, y usar la misma funci&#243;n para ambos... &#161;vaya cara pon&#233;s! es as&#237;, mir&#225; ve:<br><br>*CREATE TRIGGER si_representa_debe_trabajar BEFORE INSERT OR UPDATE ON departamento FOR EACH ROW EXECUTE PROCEDURE representa_trabaja();<br>*CREATE TRIGGER si_representa_no_cambia_trabajo BEFORE UPDATE ON miembro FOR EACH ROW EXECUTE PROCEDURE representa_trabaja();<br><br>Puedes probar cada caso con estas consultas:<br><br>*update miembro set denominacion_departamento =&#x27;Ventas&#x27; where dui =&#x27;34531178-8&#x27;;<br>*update departamento set dui_miembro_representante = &#x27;34531178-8&#x27; where denominacion=&#x27;Ventas&#x27;;<br><br>S&#237;, claaaro, claro, sin duda, todo lo anterior ya lo sab&#237;as vedaaa? dale pex, a picar c&#243;digo que urge. Cuando ya lo tengas funcionando, prueba el siguiente caso que s&#237; funciona porque el miembro ya pertenece al departamento que va a representar:<br><br>*update departamento set dui_miembro_representante = &#x27;02112463-5&#x27; where denominacion=&#x27;Gesti&#243;n&#x27;;<br><br>Cuando termin&#233;s, mir&#225; en la tabla esa que dej&#243; Kurt, kurt_out... siempre fue mero narciso ese bicho... pero algo tiene que me cae bien... meh, son babosadas, la onda es que ah&#237; te saldr&#225; + info para que Kurt siga con su &quot;delicado asuntito&quot;: yo por el momento desaparezco y ni modo, me toca destruir hasta mi pinche compu para que ese maldito de Ale no me rastree.<br><br>Bais.<br>
+</body>
+</html>

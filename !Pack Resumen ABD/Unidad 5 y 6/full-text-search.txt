@@ -1,0 +1,231 @@
+
+-- BD de ejemplo
+
+drop database if exists fulltextsearch;
+create database fulltextsearch;
+
+\c fulltextsearch uca
+
+CREATE TABLE autor(
+   id SERIAL PRIMARY KEY,
+   nombre TEXT NOT NULL
+);
+
+CREATE TABLE post(
+   id SERIAL PRIMARY KEY,
+   titulo TEXT NOT NULL,
+   contenido TEXT NOT NULL,
+   autor_id INT NOT NULL references autor(id) 
+);
+
+CREATE TABLE etiqueta(
+   id SERIAL PRIMARY KEY,
+   nombre TEXT NOT NULL 
+);
+
+CREATE TABLE posts_etiquetas(
+   post_id INT NOT NULL references post(id),
+   etiqueta_id INT NOT NULL references etiqueta(id)
+);
+
+INSERT INTO autor (id, nombre) 
+VALUES (1, 'Pedro Bravo'), 
+       (2, 'Raquel Ordaz'), 
+       (3, 'Roberto Marín');
+
+INSERT INTO etiqueta (id, nombre) 
+VALUES (1, 'Ciencia ficción'), 
+       (2, 'Política'), 
+       (3, 'Ciencia');
+
+INSERT INTO post (id, titulo, contenido, autor_id) 
+VALUES (1, 'Especies en peligro', 
+        'El oso panda es un precioso animal que, a pesar de su belleza, lamentablemente está en peligro de extinción y quedan muy pocos ejemplares en libertad.', 1 ), 
+       (2, 'Libertad del software', 
+        'Al igual que con otros tipos de libertades, la libertad del software debería ser un derecho necesario, pero las empresas de software privativo siempre la consideran un gran peligro: tal planteamiento las llevará a la extinción.', 2), 
+       (3, 'Star Wars versus Star Trek', 
+        'Ésta es probablemente la comparación más controvertida del último siglo, provocando todo tipo de peligrosas amenazas entre quienes defienden una u otra saga: algunos de ellos debieron ser privados de libertad.', 3);
+
+INSERT INTO posts_etiquetas (post_id, etiqueta_id) 
+VALUES (1, 3), 
+       (2, 2), 
+       (3, 1);
+
+-- Idiomas soportados por default
+
+\dFd
+       
+-- Documentos en texto plano... no son muy útiles
+SELECT post.titulo || ' ' || 
+       post.contenido || ' ' ||
+       autor.nombre || ' ' ||
+       coalesce((string_agg(etiqueta.nombre, ' ')), '') as documento
+FROM post, autor, posts_etiquetas, etiqueta
+WHERE autor.id = post.autor_id
+AND posts_etiquetas.post_id = post.id
+AND etiqueta.id = posts_etiquetas.etiqueta_id
+GROUP BY post.id, autor.id;
+       
+-- Uso de vector de lexemas
+
+SELECT to_tsvector('Podríamos esperar que, con el tiempo, las máquinas lleguen a competir con el hombre en todos los campos puramente intelectuales. No obstante, ¿cuáles son las mejores para comenzar? incluso ésta resulta una decisión difícil. Mucha gente piensa que lo mejor sería una actividad muy abstracta, como jugar ajedrez. También puede sostenerse que lo mejor sería dotar a la máquina con los mejores órganos sensoriales que el dinero pueda comprar, y luego enseñarle a comprender y a hablar. Este proceso podía seguir el proceso normal de enseñanza de un niño. Se le podrían señalar cosas y nombrarlas. Reitero que desconozco la respuesta correcta, pero considero que hay que intentar ambos enfoques.');
+       
+-- Ya no hay "palabras vacías" (como artículos, pronombres, preposiciones...), todo está en minúsculas, sin tildes y se observan las raíces de las palabras
+       
+-- Búsqueda con @@
+
+SELECT to_tsvector('Podríamos esperar que, con el tiempo, las máquinas lleguen a competir con el hombre en todos los campos puramente intelectuales. No obstante, ¿cuáles son las mejores para comenzar? incluso ésta resulta una decisión difícil. Mucha gente piensa que lo mejor sería una actividad muy abstracta, como jugar ajedrez. También puede sostenerse que lo mejor sería dotar a la máquina con los mejores órganos sensoriales que el dinero pueda comprar, y luego enseñarle a comprender y a hablar. Este proceso podía seguir el proceso normal de enseñanza de un niño. Se le podrían señalar cosas y nombrarlas. Reitero que desconozco la respuesta correcta, pero considero que hay que intentar ambos enfoques.') @@ 'mejor';
+-- cuidado, lo encuentra porque es un lexema directo... probemos cualquier otra cosa y retornará falso (p.e. 'Mucha')
+
+-- el término de búsqueda debe convertirse previamente a ts_query (para lexematizarlo y luego buscar en el vector)
+SELECT to_tsvector('Podríamos esperar que, con el tiempo, las máquinas lleguen a competir con el hombre en todos los campos puramente intelectuales. No obstante, ¿cuáles son las mejores para comenzar? incluso ésta resulta una decisión difícil. Mucha gente piensa que lo mejor sería una actividad muy abstracta, como jugar ajedrez. También puede sostenerse que lo mejor sería dotar a la máquina con los mejores órganos sensoriales que el dinero pueda comprar, y luego enseñarle a comprender y a hablar. Este proceso podía seguir el proceso normal de enseñanza de un niño. Se le podrían señalar cosas y nombrarlas. Reitero que desconozco la respuesta correcta, pero considero que hay que intentar ambos enfoques.') @@ to_tsquery('Mucha');
+
+-- Se pueden usar operadores booleanos:
+
+to_tsquery('Mucha & proceso');
+
+to_tsquery('Mucha & situación');
+
+to_tsquery('Mucha | situación');
+
+to_tsquery('Mucha & !situación');
+  
+-- podemos buscar con comodines p.e.
+
+to_tsquery('ho'); -- no encuentra nada
+
+to_tsquery('ho:*'); -- sí hay un lexema que empieza por ho (hombr)
+
+
+-- Convirtamos la consulta de texto plano en filas lexematizadas/estandarizadas
+
+SELECT 
+    post.id as pid,
+    post.titulo as p_titulo,
+    to_tsvector(post.titulo) ||
+    to_tsvector(post.contenido) ||
+    to_tsvector(autor.nombre) ||
+    to_tsvector(coalesce(string_agg(etiqueta.nombre, ' '))) as documento
+FROM post, autor, posts_etiquetas, etiqueta
+WHERE autor.id = post.autor_id
+AND posts_etiquetas.post_id = post.id
+AND etiqueta.id = posts_etiquetas.etiqueta_id
+GROUP BY post.id, autor.id;
+
+-- Hoy sí, hagamos una consulta poderosa de full text
+
+SELECT pid,p_titulo FROM (
+    SELECT 
+        post.id as pid,
+        post.titulo as p_titulo,
+        to_tsvector(post.titulo) ||
+        to_tsvector(post.contenido) ||
+        to_tsvector(autor.nombre) ||
+        to_tsvector(coalesce(string_agg(etiqueta.nombre, ' '))) as documento
+    FROM post, autor, posts_etiquetas, etiqueta
+    WHERE autor.id = post.autor_id
+    AND posts_etiquetas.post_id = post.id
+    AND etiqueta.id = posts_etiquetas.etiqueta_id
+    GROUP BY post.id, autor.id
+) p_busqueda
+WHERE p_busqueda.documento @@ to_tsquery('Peligro & animal');
+
+-- Aún todavía más: ranking y pesos. Cuanto mayor sea el valor del ranking, más relevante es el resultado
+
+SELECT pid,p_titulo,ts_rank(p_busqueda.documento,to_tsquery('Peligro & libertad')) FROM (
+    SELECT 
+        post.id as pid,
+        post.titulo as p_titulo,
+        to_tsvector(post.titulo) ||
+        to_tsvector(post.contenido) ||
+        to_tsvector(autor.nombre) ||
+        to_tsvector(coalesce(string_agg(etiqueta.nombre, ' '))) as documento
+    FROM post, autor, posts_etiquetas, etiqueta
+    WHERE autor.id = post.autor_id
+    AND posts_etiquetas.post_id = post.id
+    AND etiqueta.id = posts_etiquetas.etiqueta_id
+    GROUP BY post.id, autor.id
+) p_busqueda;
+
+-- sin pesos
+SELECT pid,p_titulo,ts_rank(p_busqueda.documento,to_tsquery('peligro')) FROM (
+    SELECT 
+        post.id as pid,
+        post.titulo as p_titulo,
+        to_tsvector(post.titulo) ||
+        to_tsvector(post.contenido) ||
+        to_tsvector(autor.nombre) ||
+        to_tsvector(coalesce(string_agg(etiqueta.nombre, ' '))) as documento
+    FROM post, autor, posts_etiquetas, etiqueta
+    WHERE autor.id = post.autor_id
+    AND posts_etiquetas.post_id = post.id
+    AND etiqueta.id = posts_etiquetas.etiqueta_id
+    GROUP BY post.id, autor.id
+) p_busqueda;
+
+-- con pesos
+SELECT pid,p_titulo,ts_rank(p_busqueda.documento,to_tsquery('peligro')) FROM (
+    SELECT 
+        post.id as pid,
+        post.titulo as p_titulo,
+        setweight(to_tsvector(post.titulo),'A') ||
+        setweight(to_tsvector(post.contenido),'B') ||
+        setweight(to_tsvector(autor.nombre),'C') ||
+        setweight(to_tsvector(coalesce(string_agg(etiqueta.nombre, ' '))),'B') as documento
+    FROM post, autor, posts_etiquetas, etiqueta
+    WHERE autor.id = post.autor_id
+    AND posts_etiquetas.post_id = post.id
+    AND etiqueta.id = posts_etiquetas.etiqueta_id
+    GROUP BY post.id, autor.id
+) p_busqueda;
+
+
+-- Más poder: búsqueda de frase (distancia entre términos). Se usa tsquery_phrase() o '<->', <-> implica adyacentes, <2> dos palabras de distancia, etc. OJO no es simétrico
+
+SELECT pid,p_titulo FROM (
+    SELECT 
+        post.id as pid,
+        post.titulo as p_titulo,
+        to_tsvector(post.titulo) ||
+        to_tsvector(post.contenido) ||
+        to_tsvector(autor.nombre) ||
+        to_tsvector(coalesce(string_agg(etiqueta.nombre, ' '))) as documento
+    FROM post, autor, posts_etiquetas, etiqueta
+    WHERE autor.id = post.autor_id
+    AND posts_etiquetas.post_id = post.id
+    AND etiqueta.id = posts_etiquetas.etiqueta_id
+    GROUP BY post.id, autor.id
+) p_busqueda
+WHERE p_busqueda.documento @@ to_tsquery('peligro & extinción');
+
+SELECT pid,p_titulo FROM (
+    SELECT 
+        post.id as pid,
+        post.titulo as p_titulo,
+        to_tsvector(post.titulo) ||
+        to_tsvector(post.contenido) ||
+        to_tsvector(autor.nombre) ||
+        to_tsvector(coalesce(string_agg(etiqueta.nombre, ' '))) as documento
+    FROM post, autor, posts_etiquetas, etiqueta
+    WHERE autor.id = post.autor_id
+    AND posts_etiquetas.post_id = post.id
+    AND etiqueta.id = posts_etiquetas.etiqueta_id
+    GROUP BY post.id, autor.id
+) p_busqueda
+WHERE p_busqueda.documento @@ to_tsquery('peligro <2> extinción');
+
+-- Obtención de extractos 
+SELECT pid,p_titulo,ts_headline(p_busqueda.documento,to_tsquery('Peligro & libertad')) FROM (
+    SELECT 
+       post.id as pid,
+       post.titulo as p_titulo,
+       post.titulo || ' ' || 
+       post.contenido || ' ' ||
+       autor.nombre || ' ' ||
+       coalesce((string_agg(etiqueta.nombre, ' ')), '') as documento
+    FROM post, autor, posts_etiquetas, etiqueta
+    WHERE autor.id = post.autor_id
+    AND posts_etiquetas.post_id = post.id
+    AND etiqueta.id = posts_etiquetas.etiqueta_id
+    GROUP BY post.id, autor.id
+) p_busqueda;

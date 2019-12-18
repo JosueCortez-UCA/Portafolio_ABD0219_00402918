@@ -1,0 +1,85 @@
+
+Ejercicio 1)
+
+CREATE TYPE tipo_nota (
+    calificacion_numerica decimal,
+    calificacion_cualitativa varchar
+);
+
+CREATE TABLE inscripcion(
+    NIE_alumno varchar,
+    denominacion_nivel_grado_asignatura varchar,
+    numero_grado_asignatura tinyint,
+    numero_anyo_asignatura int,
+    nombre_asignatura varchar,
+    nombre_alumno varchar,   
+    notas map <varchar,frozen <tipo_nota>>,
+    PRIMARY KEY (numero_anyo_asignatura,denominacion_nivel_grado_asignatura,numero_grado_asignatura,nombre_asignatura,NIE_alumno)
+);
+
+INSERT INTO inscripcion (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,notas) VALUES ('20233412','Educación Básica',1,2019,'Ciencias Naturales','María Victoria López',
+ {
+  'Parcial 1':{calificacion_numerica:7.8,calificacion_cualitativa:'Notable'},
+  'Parcial 2':{calificacion_numerica:9.5,calificacion_cualitativa:'Sobresaliente'}
+ }
+);
+
+Ejercicio 2)
+
+CREATE TABLE notas(
+    NIE_alumno varchar,
+    denominacion_nivel_grado_asignatura varchar,
+    numero_grado_asignatura tinyint,
+    numero_anyo_asignatura int,
+    nombre_asignatura varchar,
+    nombre_alumno varchar,   
+    nota_promedio decimal,
+    PRIMARY KEY (numero_anyo_asignatura,denominacion_nivel_grado_asignatura,numero_grado_asignatura,nombre_asignatura,NIE_alumno)
+);
+
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233412','Educación Básica',8,2018,'Ciencias Naturales','María Victoria López',6.9);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233413','Educación Básica',8,2018,'Ciencias Naturales','Francisco Villa',8.3);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233414','Educación Básica',9,2018,'Ciencias Naturales','Sonia Herrera',9.5);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233415','Educación Básica',9,2018,'Ciencias Naturales','Álvaro Mayor',9.3);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233416','Educación Media',1,2018,'Ciencias Sociales','Arturo Soria',7.5);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233417','Educación Media',1,2018,'Ciencias Sociales','Sandra Brune',9.2);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233418','Educación Media',2,2018,'Ciencias Sociales','Salvador Díaz',8.5);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233419','Educación Media',2,2018,'Ciencias Sociales','Amparo Pérez',9.0);
+
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233410','Educación Básica',8,2019,'Ciencias Naturales','Juan Larín',8.9);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233411','Educación Básica',8,2019,'Ciencias Naturales','Laura Chinchilla',8.3);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233412','Educación Básica',9,2019,'Ciencias Naturales','María Victoria López',7.9);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233413','Educación Básica',9,2019,'Ciencias Naturales','Francisco Villa',7.3);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233414','Educación Media',1,2019,'Ciencias Sociales','Sonia Herrera',10);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233415','Educación Media',1,2019,'Ciencias Sociales','Álvaro Mayor',9.7);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233416','Educación Media',2,2019,'Ciencias Sociales','Arturo Soria',8.6);
+INSERT INTO notas (NIE_alumno,denominacion_nivel_grado_asignatura,numero_grado_asignatura,numero_anyo_asignatura,nombre_asignatura,nombre_alumno,nota_promedio) VALUES ('20233417','Educación Media',2,2019,'Ciencias Sociales','Sandra Brune',9.9);
+
+SELECT * from notas;
+
+Ejercicio 3)
+
+1) Calcule el Promedio, máximo y mínimo de notas por año, nivel y grado elaborando una consulta por cada año, para lo cual deberá utilizar en el WHERE la columna de partición, y agrupar y ordenar usando las columnas de clustering nivel y grado.
+
+select numero_anyo_asignatura,denominacion_nivel_grado_asignatura,numero_grado_asignatura,
+       avg(nota_promedio),max(nota_promedio),min(nota_promedio) 
+from notas
+where numero_anyo_asignatura =2018
+group by denominacion_nivel_grado_asignatura,numero_grado_asignatura
+order by denominacion_nivel_grado_asignatura,numero_grado_asignatura;
+
+select numero_anyo_asignatura,denominacion_nivel_grado_asignatura,numero_grado_asignatura,
+       avg(nota_promedio),max(nota_promedio),min(nota_promedio) 
+from notas
+where numero_anyo_asignatura =2019
+group by denominacion_nivel_grado_asignatura,numero_grado_asignatura
+order by denominacion_nivel_grado_asignatura,numero_grado_asignatura;
+
+2) Calcule la nota máxima por año y después obtenga el nombre y NIE de quien/es obtuvieron dicha nota. Dado que en Cassandra no es posible realizar subconsultas, deberá realizar primero la consulta de la nota máxima agrupando por año y luego efectuar consultas por cada año y nota para obtener el nombre y NIE (no olvide expresar ALLOW FILTERING para que Cassandra pueda hacer la búsqueda). 
+
+select numero_anyo_asignatura,max(nota_promedio) 
+from notas
+group by numero_anyo_asignatura;
+
+select nombre_alumno,NIE_alumno  from notas where nota_promedio=10 and numero_anyo_asignatura=2019 allow filtering;
+select nombre_alumno,NIE_alumno  from notas where nota_promedio=9.5 and numero_anyo_asignatura=2018 allow filtering;

@@ -1,0 +1,325 @@
+====================
+Columnar / cassandra
+====================
+
+Links
+-----
+Principal: http://cassandra.apache.org/
+Historia: https://en.wikipedia.org/wiki/Apache_Cassandra#History
+Documentación: https://docs.datastax.com/en/cql/3.3/
+Replicación: multi-master
+Estructuras circulares de nodos con varios niveles de tolerancia a fallos
+Clusters -> Datacenters -> Nodos/Servers ubicados en "racks"
+
+Instalación
+-----------
+
+NO FUNCIONA SI NO ES CON JAVA 8 (supuestamente Cassandra 4 y posteriores lo harán)
+
+-> Instalar Java 8
+1) Agregar repositorios de stretch (temporalmente) en /etc/apt/sources.list
+deb http://debian.salud.gob.sv/debian/ stretch main
+deb-src http://debian.salud.gob.sv/debian/ stretch main
+
+2) actualizar listas e instalar
+apt-get update
+apt-get install openjdk-8-jre
+
+3) Eliminar repositorios de stretch de /etc/apt/sources.list y actualizar listas
+apt-get update
+
+4) Configurar Java 8 como java por defecto
+update-alternatives --config java
+
+-> Instalar Cassandra
+
+1) Agregar repositorio y llave del repositorio
+echo "deb http://www.apache.org/dist/cassandra/debian 311x main" | tee -a /etc/apt/sources.list.d/cassandra.sources.list
+apt-get install curl
+curl https://www.apache.org/dist/cassandra/KEYS | apt-key add -
+
+2) Actualizar listas e instalar
+apt-get update
+apt-get install cassandra cassandra-tools
+
+Clientes
+--------
+
+cqlsh
+https://razorsql.com/features/cassandra_database_client_gui.html
+
+Configuración /etc/cassandra
+----------------------------
+
+-> uso de recursos (de una vez agarra 30% aprox de la RAM!)
+
+cassandra-env.sh
+MAX_HEAP_SIZE
+
+cassandra.yaml
+native_transport_max_concurrent_connections
+native_transport_max_concurrent_connections_per_ip
+
+-> autenticación y usuarios
+cassandra.yaml
+- validación de login
+authenticator: PasswordAuthenticator
+- para habilitar permisos sobre objetos (GRANT/REVOKE)
+authorizer: CassandraAuthorizer
+
+service cassandra restart 
+
+(tarda un ratito)
+
+cqlsh -u cassandra -p cassandra
+CREATE ROLE admin WITH SUPERUSER = true AND LOGIN = true AND PASSWORD = 'lapalabramagica';
+
+cqlsh -u admin
+ALTER ROLE cassandra WITH SUPERUSER = false AND LOGIN = false;
+
+
+comando de gestión e información
+--------------------------------
+
+nodetool
+
+Operaciones básicas
+-------------------
+
+* Las BDs se denominan Keyspace (CREATE, ALTER, DROP)
+
+CREATE KEYSPACE Ucasoft WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };
+
+-> Estrategias: Simple, toma en cuenta racks. NetworkTopology, toma en cuenta datacenters.
+-> Factor de replicación: número de nodos que contendrán réplica de los datos (sentido agujas del reloj)
+
+Esto tiene una relación directa con la consistencia, muy relevante
+
+HELP CONSISTENCY
+
+https://docs.datastax.com/en/cassandra/3.0/cassandra/dml/dmlConfigConsistency.html
+
+Opción DURABLE_WRITES: true garantiza escritura en el log de disco (robustez), false no (velocidad).
+
+* Para entrar a una BD en particular se utiliza el comando USE
+
+USE Ucasoft;
+
+* Las tablas se denominan Table o ColumnFamily (CREATE,ALTER,DROP). 
+
+CREATE COLUMNFAMILY Miembro (id int, Apellido text, Nombre text, PRIMARY KEY(id));
+
+Es imprescindible definir la PRIMARY KEY, que puede ser compuesta.
+
+Las filas de una COLUMNFAMILY en realidad apuntan a un conjunto de parejas clave/columna-valor, por ello es flexible.
+
+SUPERCOLUMN: columnas que almacenan otras columnas, eran estructuras problemáticas y ya no se usan.
+
+DESCRIBE TABLE Miembro;
+
+* Índices
+
+CREATE INDEX idx_nombre ON miembro(apellido);
+
+* Insertar
+
+INSERT INTO Miembro (id, Apellido, Nombre) VALUES (1, 'Perez', 'Juan');
+
+* Actualizar
+
+UPDATE Miembro SET Nombre='Juanito' WHERE id=1;
+
+* Borrar
+
+DELETE Nombre FROM Miembro WHERE id=1; 
+DELETE FROM Miembro WHERE id=1;
+
+* Transacciones
+
+BEGIN BATCH
+INSERT INTO Miembro (id, Apellido, Nombre) VALUES (2, 'Martínez', 'Rosa');
+INSERT INTO Miembro (id, Apellido, Nombre) VALUES (3, 'McNamara', 'Evelyn');
+APPLY BATCH;
+
+* Tipos de datos
+
+- básicos
+https://docs.datastax.com/en/cql/3.3/cql/cql_reference/cql_data_types_c.html
+
+- Colecciones
+
+-- Conjuntos (por orden alfabético/numérico)
+CREATE COLUMNFAMILY Miembro2 (
+    id int, 
+    Apellido varchar, 
+    Nombre varchar, 
+    salario decimal,
+    telefonos set<varchar>,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO Miembro2 (id, Apellido, Nombre, Salario, Telefonos) VALUES (1, 'McNamara', 'Evelyn',1340.34,{'+50370345678','+34952801159'});
+UPDATE Miembro2 SET telefonos=telefonos+{'+50560789897'} WHERE id=1;
+SELECT * FROM Miembro2;
+
+-- Listas (por orden de inserción)
+CREATE COLUMNFAMILY Miembro3 (
+    id int, 
+    Apellido varchar, 
+    Nombre varchar, 
+    salario decimal,
+    correos list<varchar>,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO Miembro3 (id, Apellido, Nombre, Salario, Correos) VALUES (1, 'McNamara', 'Evelyn',1340.34,['evmac@gmail.com','emcnamara@uca.edu.sv']);
+UPDATE Miembro3 SET correos=correos+['macky@lerolero.com'] WHERE id=1;
+SELECT * FROM Miembro3;
+
+-- Mapas (conjuntos clave-valor, la ordenación depende del tipo de la clave)
+CREATE COLUMNFAMILY Miembro4 (
+    id int, 
+    Apellido varchar, 
+    Nombre varchar, 
+    salario decimal,
+    departamento varchar,
+    contactos map<varchar,varchar>,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO Miembro4 (id, Apellido, Nombre, Salario, Departamento, Contactos) VALUES (1, 'McNamara', 'Evelyn',1340.34,'Ingeniería',{'correo':'evmac@gmail.com','telefono':'+50312345678'});
+UPDATE Miembro4 SET contactos=contactos+{'correo trabajo':'macky@lerolero.com'} WHERE id=1;
+INSERT INTO Miembro4 (id, Apellido, Nombre, Salario, Departamento, Contactos) VALUES (2, 'Fletcher', 'Andrés',1600,'Producción',{'telefono':'+50582221234','correo':'fletch@dm.com'});
+SELECT * FROM Miembro4;
+
+-- Tuplas (tipo compuesto quick&dirty)
+CREATE COLUMNFAMILY Miembro5 (
+    id int, 
+    Apellido varchar, 
+    Nombre varchar, 
+    salario decimal,
+    direccion tuple<varchar,int>,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO Miembro5 (id, Apellido, Nombre, Salario, Direccion) VALUES (1, 'McNamara', 'Evelyn',1340.34,('Calle Maquilishuat',5));
+SELECT * FROM Miembro5;
+
+-- Tipos compuestos
+CREATE TYPE tipo_direccion (
+    calle text,
+    numero int
+);
+
+CREATE COLUMNFAMILY Miembro6 (
+    id int, 
+    Apellido varchar, 
+    Nombre varchar, 
+    salario decimal,
+    ubicacion tipo_direccion,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO Miembro6 (id, Apellido, Nombre, Salario, Ubicacion) VALUES (1, 'McNamara', 'Evelyn',1340.34,{calle:'Calle Maquilishuat',numero:5});
+
+SELECT * FROM Miembro6;
+
+-- Es posible hacer conjuntos, listas o mapas de tipos compuestos, pero en ese caso deben ser "congelados" (frozen), lo que implica que la actualización de los datos debe hacerse completa (no puede actualizarse solo una parte). Por ejemplo:
+
+CREATE COLUMNFAMILY Miembro7 (
+    id int, 
+    Apellido varchar, 
+    Nombre varchar, 
+    salario decimal,
+    ubicacion map <varchar, frozen <tipo_direccion>>,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO Miembro7 (id, Apellido, Nombre, Salario, Ubicacion) VALUES (1, 'McNamara', 'Evelyn',1340.34,
+ {'direccion_casa':{calle:'Calle Maquilishuat',numero:5},
+  'direccion_trabajo':{calle:'Avenida Bernal',numero:37}
+ }
+);
+
+SELECT * FROM Miembro7;
+
+UPDATE Miembro7 SET Ubicacion=Ubicacion+{'direccion_vacil':{calle:'Costa del Sol',numero:17}} WHERE id=1;
+
+SELECT * FROM Miembro7;
+
+UPDATE Miembro7 SET Ubicacion=Ubicacion-{'direccion_trabajo'} WHERE id=1;
+
+UPDATE Miembro7 SET Ubicacion['direccion_trabajo']={calle:'Bulevar Los Próceres',numero:58} WHERE id=1;
+
+-- ¿Y se puede acceder a las partes de un mapa en el SELECT? sí, pero hay que programarlo a mano (mediante User defined functions) y no es algo precisamente confortable
+
+* Expiración
+- Se puede asignar a toda una fila (en realidad se asigna a todas las columnas de una fila)
+INSERT INTO Miembro (id, Apellido, Nombre) VALUES (3, 'Borrego del Valle', 'David') USING TTL 20;
+
+Select id,nombre,apellido,ttl(nombre),ttl(apellido) from Miembro;
+
+- Pero también actualizar a cualquier columna (excepto componentes de la primary key)
+INSERT INTO Miembro (id, Apellido, Nombre) VALUES (3, 'Borrego del Valle', 'David') USING TTL 30;
+UPDATE miembro USING ttl 10 SET apellido='Borrego Mimoso' WHERE id=3;
+SELECT id,nombre,apellido,ttl(nombre),ttl(apellido) FROM Miembro;
+
+* Consultar
+
+INSERT INTO Miembro4 (id, Apellido, Nombre, Salario, Departamento, Contactos) VALUES (3, 'Luna', 'Osiris',4600,'Gerencia',{'telefono':'+50372347654','correo':'dechoto@avioneta.com'});
+INSERT INTO Miembro4 (id, Apellido, Nombre, Salario, Departamento, Contactos) VALUES (4, 'Torres', 'Julia',1800,'Ingeniería',{'telefono':'+50373221234','correo':'julyta@gmail.com'});
+
+SELECT * FROM Miembro4;
+
+SELECT * FROM Miembro4 where departamento='Ingeniería';
+
+-- ¿Cuál eficiencia impredecible? en realidad la 'alarma' es lo que sucede habitualmente en una BD relacional: a falta de un índice secundario tendrá que escanearse toda la tabla para encontrar los datos coincidentes, pero en Cassandra eso significa que muy probablemente hay un MAL DISEÑO no relacional.
+
+SELECT * FROM Miembro4 where departamento='Ingeniería' allow filtering;
+
+SELECT avg(salario) from Miembro4;
+
+-- Un warning rarito, pero ok, sigamos ...
+
+SELECT avg(salario) from Miembro4 group by departamento;
+
+--> ERROR? KHASTAPASANDA!?!?! 
+
+En Cassandra la primary key no solo sirve para definir unicidad sino ubicación de los datos entre los nodos así como la posibilidad de usar agrupación en consultas: el primer componente de la PK es la llamada partition key, (y pueden ser varias columnas con () anidados), y los restantes componentes son clustering keys, que sirven para ordenación dentro de un mismo nodo. Esto se puede expresar en la creación de la tabla con el apéndice WITH CLUSTERING ORDER BY.
+
+CREATE COLUMNFAMILY Miembro4 (
+    id int, 
+    Apellido varchar, 
+    Nombre varchar, 
+    salario decimal,
+    departamento varchar,
+    contactos map<varchar,varchar>,
+    PRIMARY KEY(departamento,id)
+) WITH CLUSTERING ORDER BY (id DESC);
+
+INSERT INTO Miembro4 (id, Apellido, Nombre, Salario, Departamento, Contactos) VALUES (1, 'McNamara', 'Evelyn',1340.34,'Ingeniería',{'correo':'evmac@gmail.com','telefono':'+50312345678'});
+INSERT INTO Miembro4 (id, Apellido, Nombre, Salario, Departamento, Contactos) VALUES (2, 'Fletcher', 'Andrés',1600,'Producción',{'telefono':'+50582221234','correo':'fletch@dm.com'});
+INSERT INTO Miembro4 (id, Apellido, Nombre, Salario, Departamento, Contactos) VALUES (3, 'Luna', 'Osiris',4600,'Gerencia',{'telefono':'+50372347654','correo':'dechoto@avioneta.com'});
+INSERT INTO Miembro4 (id, Apellido, Nombre, Salario, Departamento, Contactos) VALUES (4, 'Torres', 'Julia',1800,'Ingeniería',{'telefono':'+50373221234','correo':'julyta@gmail.com'});
+
+SELECT * from miembro4;
+
+SELECT avg(salario) from Miembro4 group by departamento;
+
+SELECT departamento,avg(salario) from Miembro4 where departamento='Ingeniería' group by departamento;
+
+- Y ahora:
+SELECT * from Miembro4 order by apellido;
+SELECT * from Miembro4 where departamento='Ingeniería' order by apellido;
+SELECT * from Miembro4 where departamento='Ingeniería' order by id;
+
+--> dan MUCHAS GANAS de volver a la vieja confiable relacionalidad 
+
+- Integridad referencial, composiciones/joins
+¡¡¡¡No hay nada que se le parezca!!!!
+
+Opción 1) Denormalizar
+Opción 2) Usar una aplicación como Apache Spark (Spark SQL)
+
+Lectura recomendada: 
+https://opencredo.com/blogs/how-not-to-use-cassandra-like-an-rdbms-and-what-will-happen-if-you-do/
